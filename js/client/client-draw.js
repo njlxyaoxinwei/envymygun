@@ -4,7 +4,7 @@ var NVMCClient = NVMCClient || {};
 
 var CharacterParams = {
   wheelTheta: 0,
-  deltaWheelTheta: 5,
+  deltaWheelTheta: 0.005,
 };
 
 NVMCClient.drawScene = function(gl) {
@@ -156,6 +156,21 @@ NVMCClient.drawWheel = function(gl) {
   stack.multiply(M_3_rot);
   var M_3_tra = SglMat4.translation([0, -1, 0]);
   stack.multiply(M_3_tra);
+
+  var forward_v = SglVec3.dot(
+      this.myVelocity(),
+      SglVec3.normalize(SglVec3.sub(SglMat4.mul3(this.myFrame(), [0, 0, -10]), this.myPos())));
+  if (!isNaN(forward_v)) {
+    console.log(forward_v);
+    CharacterParams.wheelTheta += CharacterParams.deltaWheelTheta * forward_v;
+    if (CharacterParams.wheelTheta > 2 * Math.PI) {
+      CharacterParams.wheelTheta -= 2 * Math.PI;
+    } else if (CharacterParams.wheelTheta < 0) {
+      CharacterParams.wheelTheta += 2 * Math.PI;
+    }
+  }
+  var M_3_rot2 = SglMat4.rotationAngleAxis(CharacterParams.wheelTheta, [0, 1, 0]);
+  stack.multiply(M_3_rot2);
 
   gl.uniformMatrix4fv(
       this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
