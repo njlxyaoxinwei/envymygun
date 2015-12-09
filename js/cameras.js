@@ -68,8 +68,8 @@ function PhotographerCamera() {
 
   var me = this;
   this.handleKey = {};
-  this.handleKey["Q"] = function() {me.t_V = [0, 0.1, 0];};
-  this.handleKey["E"] = function() {me.t_V = [0, -0.1, 0];};
+  this.handleKey["R"] = function() {me.t_V = [0, 0.1, 0];};
+  this.handleKey["V"] = function() {me.t_V = [0, -0.1, 0];};
   this.handleKey["L"] = function() {me.lockToCar= true;};
   this.handleKey["U"] = function() {me.lockToCar= false;};
 
