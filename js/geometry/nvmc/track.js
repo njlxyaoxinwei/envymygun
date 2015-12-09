@@ -2,6 +2,14 @@ function Track(track) {
 	this.name = "Track";
 
 	var nv = track.pointsCount-1;
+	if (nv <= 0) {
+		this.vertices = new Float32Array(0);
+		this.triangleIndices = new Uint16Array(0);
+		this.numVertices = 0;
+		this.numTriangles = 0;
+		return;
+	}
+	
 	this.vertices = new Float32Array(nv * 2 * 3);
 
 	var vertexOffset = 0;
