@@ -1,5 +1,5 @@
 NVMC.DefaultRace = {
-    startPosition : [ 3.71,0,61.19 ],
+    startPosition : [ 0,0,0 ],
 
     photoPosition : [ -55, 0, -80 ],
 
