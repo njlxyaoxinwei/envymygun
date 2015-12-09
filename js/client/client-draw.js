@@ -2,6 +2,11 @@
 
 var NVMCClient = NVMCClient || {};
 
+var CharacterParams = {
+  wheelTheta: 0,
+  deltaWheelTheta: 5,
+};
+
 NVMCClient.drawScene = function(gl) {
   var width  = this.ui.width,
       height = this.ui.height,

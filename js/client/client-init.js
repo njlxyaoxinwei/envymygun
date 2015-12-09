@@ -13,6 +13,10 @@ NVMCClient.myFrame = function() {
   return this.game.state.players.me.dynamicState.frame;
 }
 
+NVMCClient.myVelocity = function() {
+  return this.game.state.players.me.dynamicState.linearVelocity;
+}
+
 NVMCClient.initializeCameras = function() {
   this.cameras = CreateAllCameras();
   this.n_cameras = this.cameras.length;
