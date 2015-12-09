@@ -11,6 +11,17 @@ NVMCClient.onInitialize = function() {
   this.initializeObjects(gl);
   this.initializeCameras();
   this.uniformShader = new uniformShader(gl);
+  var that = this;
+  setInterval(function(){
+    console.log("forward");
+    var f = SglVec3.normalize(SglMat4.mul3(that.myFrame(), [0, 0, 1]));
+    console.log(f);
+    var v = SglVec3.normalize(that.myVelocity());
+    console.log("direction");
+    console.log(v);
+    console.log("dot");
+    console.log(SglVec3.dot(f, v));
+  }, 1000);
 };
 
 NVMCClient.onTerminate = function() {};
