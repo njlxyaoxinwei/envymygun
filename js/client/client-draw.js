@@ -126,11 +126,11 @@ NVMCClient.drawCar = function(gl) {
     stack.pop();
   }
 
-  // Body
+  // Chasis
   stack.push();
   var M_2_tra_0 = SglMat4.translation([0, 0.3, 0]);
   stack.multiply(M_2_tra_0);
-  var M_2_sca = SglMat4.scaling([1, 0.5, 2]);
+  var M_2_sca = SglMat4.scaling([1, 0.25, 2]);
   stack.multiply(M_2_sca);
   var M_2_tra_1 = SglMat4.translation([0, 1, 0]);
   stack.multiply(M_2_tra_1);
