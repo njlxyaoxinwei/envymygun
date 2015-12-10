@@ -15,16 +15,22 @@ function Character(gl, client) {
     gunThetaHorizontal: 0.0,
     gunThetaVertical: 0.0,
     deltaGunTheta: 0.01,
-    gunMaxThetaHorizontal: 1,
-    gunMaxThetaVertical: 1,
+    gunMaxThetaHorizontal: 0.5,
+    gunMaxThetaVertical: 0.5,
     gunTurningLeft: false,
     gunTurningRight: false,
+    gunTurningUp: false,
+    gunTurningDown: false,
   };
 
   var that = this;
   this.keyHandler_ = {
-    T: function() {},
-    G: function() {},
+    T: function(on) {
+      that.params_.gunTurningUp  = on;
+    },
+    G: function(on) {
+      that.params_.gunTurningDown = on;
+    },
     F: function(on) {
       that.params_.gunTurningLeft = on;
     },
@@ -119,6 +125,12 @@ Character.prototype.updateSelf = function() {
   if (this.params_.gunTurningRight) {
     this.aimHorizontal(true);
   }
+  if (this.params_.gunTurningUp) {
+    this.aimVertical(true);
+  }
+  if (this.params_.gunTurningDown) {
+    this.aimVertical(false);
+  }
 
 };
 
@@ -182,6 +194,8 @@ Character.prototype.drawBody_ = function(stack) {
   // Gun
   stack.push();
   stack.multiply(SglMat4.translation([0.3, accHeight - 0.1, 0]));
+  stack.multiply(
+      SglMat4.rotationAngleAxis(this.params_.gunThetaVertical, [1, 0, 0]));
   stack.multiply(
       SglMat4.rotationAngleAxis(this.params_.gunThetaHorizontal, [0, 1, 0]));
   this.drawGun_(stack);
@@ -312,6 +326,18 @@ Character.prototype.aimHorizontal = function(right) {
   this.params_.gunThetaHorizontal = v;
 };
 
+Character.prototype.aimVertical = function(up) {
+  var e = up ? 1 : -1;
+  var v = this.params_.gunThetaVertical + e * this.params_.deltaGunTheta,
+      m = this.params_.gunMaxThetaVertical;
+  if (v > m)
+    v = m;
+  if (v < 0)
+    v = 0;
+  this.params_.gunThetaVertical = v;
+}
+
+
 Character.prototype.keyDown = function(keyCode) {
   var f = this.keyHandler_[keyCode];
   if (f)
@@ -328,5 +354,5 @@ Character.prototype.getEyeCoord = function() {
   var psi = Math.atan(2 * Math.sin(this.params_.legAngle)),
       diffHeight = 0.3 * (1 - Math.cos(psi));
   var h = 0.6 + 0.6 * Math.cos(this.params_.legAngle) + 0.8 - diffHeight;
-  return [0, h, 0.5];
+  return [0, h, 0.7];
 };
