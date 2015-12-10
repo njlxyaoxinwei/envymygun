@@ -5,7 +5,10 @@ function Character(gl, client) {
 
   this.params_ = {
     wheelTheta: 0.0,
-    deltaWheelTheta: 0.025
+    legTheta: 0.0,
+    legAngle: 0.0,
+    deltaWheelTheta: 0.025,
+    legMaxAngle: 0.2,
   };
 
   this.prims_ = {
@@ -61,9 +64,28 @@ Character.prototype.getForwardV = function() {
 
 
 Character.prototype.updateSelf_ = function() {
+
+  function zigzag(x) {
+    if (x > Math.PI / 2 && x <= Math.PI * 3 / 2) {
+      return 2 - 2 * x / Math.PI;
+    } else if (x >= Math.PI * 3 / 2) {
+      return 2 * x / Math.PI - 4;
+    } else {
+      return 2 * x / Math.PI;
+    }
+  }
+
+
   // Wheels
-  this.incrParamsAngle_(
-      'wheelTheta', this.params_.deltaWheelTheta * this.getForwardV());
+  var incr = this.params_.deltaWheelTheta * this.getForwardV();
+  this.incrParamsAngle_('wheelTheta', incr);
+
+  // Legs
+  this.incrParamsAngle_('legTheta', incr * 2);
+  var v = this.params_.legTheta,
+      m = this.params_.legMaxAngle;
+
+  this.params_.legAngle = m * zigzag(v);
 };
 
 // [0, 2Pi)
@@ -101,7 +123,9 @@ Character.prototype.drawBody_ = function(stack) {
 
   // Legs
   stack.push();
-  stack.multiply(SglMat4.translation([0.12, 0.3, 0]));
+  stack.multiply(SglMat4.translation([0.12, 0.6, 0]));
+  stack.multiply(SglMat4.rotationAngleAxis(this.params_.legAngle, [1, 0, 0]));
+  stack.multiply(SglMat4.translation([0, -0.3, 0]));
   stack.multiply(SglMat4.scaling([0.08, 0.3, 0.08]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
@@ -109,7 +133,9 @@ Character.prototype.drawBody_ = function(stack) {
     gl, prims.cube, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
   stack.pop();
   stack.push();
-  stack.multiply(SglMat4.translation([-0.12, 0.3, 0]));
+  stack.multiply(SglMat4.translation([-0.12, 0.6, 0]));
+  stack.multiply(SglMat4.rotationAngleAxis(-this.params_.legAngle, [1, 0, 0]));
+  stack.multiply(SglMat4.translation([0, -0.3, 0]));
   stack.multiply(SglMat4.scaling([0.08, 0.3, 0.08]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
