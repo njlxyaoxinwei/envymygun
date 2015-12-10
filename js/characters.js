@@ -36,8 +36,10 @@ Character.prototype.draw = function(stack) {
 
 
   // Body
+  var psi = Math.atan(2 * Math.sin(this.params_.legAngle)),
+      diffHeight = 0.3 * (1 - Math.cos(psi));
   stack.push();
-  stack.multiply(SglMat4.translation([0, 0.6, 0]));
+  stack.multiply(SglMat4.translation([0, 0.6 - diffHeight, 0]));
   this.drawBody_(stack);
   stack.pop();
 
