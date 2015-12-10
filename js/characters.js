@@ -4,8 +4,8 @@ function Character(gl, client) {
   this.gl_ = gl;
 
   this.params_ = {
-    wheelTheta: 0,
-    deltaWheelTheta: 0.05
+    wheelTheta: 0.0,
+    deltaWheelTheta: 0.025
   };
 
   this.prims_ = {
@@ -27,6 +27,10 @@ Character.prototype.draw = function(stack) {
   var client = this.client_;
   var gl = this.gl_;
   var prims = this.prims_;
+
+  // Update State
+  this.updateSelf_();
+
 
   // Wheels
   var translations = [
@@ -66,7 +70,8 @@ Character.prototype.getForwardV = function() {
   var forwardLocal = [0, 0, -2],
       forward = SglVec3.normalize(
           SglVec3.sub(SglMat4.mul3(frame, forwardLocal), pos));
-  return SglVec3.dot(vel, forward);
+  var result = SglVec3.dot(vel, forward);
+  return isNaN(result) ? 0 : result;
 };
 
 Character.prototype.drawWheel_ = function(stack) {
@@ -82,9 +87,22 @@ Character.prototype.drawWheel_ = function(stack) {
   stack.multiply(M_3_rot);
   var M_3_tra = SglMat4.translation([0, -1, 0]);
   stack.multiply(M_3_tra);
+  var M_3_rot2 = SglMat4.rotationAngleAxis(this.params_.wheelTheta, [0, 1, 0]);
+  stack.multiply(M_3_rot2);
 
   gl.uniformMatrix4fv(
       client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
   client.drawObject(gl, prims.cylinder, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
   stack.pop();    
 };
+
+Character.prototype.updateSelf_ = function() {
+  // Wheels
+  this.incrParamsAngle_(
+      'wheelTheta', this.params_.deltaWheelTheta * this.getForwardV());
+};
+
+Character.prototype.incrParamsAngle_ = function(keyName, incr) {
+  var v = this.params_[keyName];
+  this.params_[keyName] = (v + incr) % (Math.PI * 2);
+}
