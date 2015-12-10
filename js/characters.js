@@ -151,8 +151,14 @@ Character.prototype.drawBody_ = function(stack) {
 
   // Left Arm
   stack.push();
-  stack.multiply(SglMat4.translation([0, accHeight, 0]));
+  stack.multiply(SglMat4.translation([-0.2, accHeight - 0.07, 0]));
   this.drawArm_(stack);
+  stack.pop();
+
+  // Gun
+  stack.push();
+  stack.multiply(SglMat4.translation([0.3, accHeight - 0.1, 0]));
+  this.drawGun_(stack);
   stack.pop();
 
   // Head
@@ -201,7 +207,7 @@ Character.prototype.drawTorso_ = function(stack) {
   return height;
 };
 
-// Lying on XZ, along X-
+// halved by XZ, along X-
 Character.prototype.drawArm_ = function(stack) {
   var client = this.client_,
       gl     = this.gl_,
@@ -209,7 +215,6 @@ Character.prototype.drawArm_ = function(stack) {
       angle  = this.params_.leftArmAngle;
 
   stack.push();
-  stack.multiply(SglMat4.translation([-0.2, -0.07, 0]));
   stack.multiply(SglMat4.rotationAngleAxis(angle, [0, 0, 1]));
   stack.multiply(SglMat4.translation([-0.4, 0, 0]))
   stack.multiply(SglMat4.scaling([0.4, 0.07, 0.07]));
@@ -224,7 +229,7 @@ Character.prototype.drawHead_ = function(stack) {
   var client = this.client_,
       gl     = this.gl_,
       sphere = this.prims_.sphere;
-  var height = 0.5;
+  var height = 0.4;
   stack.push();
   stack.multiply(SglMat4.translation([0, height / 2, 0]));
   stack.multiply(SglMat4.scaling([height / 2, height / 2, height / 2]));
@@ -235,3 +240,17 @@ Character.prototype.drawHead_ = function(stack) {
   return height;
 };
 
+// halved by XZ, lying on Z-
+Character.prototype.drawGun_ = function(stack) {
+  var client   = this.client_,
+      gl       = this.gl_,
+      cylinder = this.prims_.cylinder;
+
+  stack.push();
+  stack.multiply(SglMat4.rotationAngleAxis(sglDegToRad(-90), [1, 0, 0]));
+  stack.multiply(SglMat4.scaling([0.1, 0.4, 0.1]));
+  gl.uniformMatrix4fv(
+    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  client.drawObject(gl, cylinder, [0.9, 0.05, 0.05, 1.0], [0, 0, 0, 1.0]);
+  stack.pop();
+}
