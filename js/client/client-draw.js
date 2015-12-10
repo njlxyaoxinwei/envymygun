@@ -67,30 +67,30 @@ NVMCClient.drawObject = function(gl, obj, fillColor, lineColor) {
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 };
 
-NVMCClient.drawTree = function(gl) {
-  var stack = this.stack;
+// NVMCClient.drawTree = function(gl) {
+//   var stack = this.stack;
 
-  // Tree Top
-  stack.push();
-  var M_0_tra1 = SglMat4.translation([0, 0.8, 0]);
-  stack.multiply(M_0_tra1);
-  var M_0_sca = SglMat4.scaling([0.6, 1.65, 0.6]);
-  stack.multiply(M_0_sca);
+//   // Tree Top
+//   stack.push();
+//   var M_0_tra1 = SglMat4.translation([0, 0.8, 0]);
+//   stack.multiply(M_0_tra1);
+//   var M_0_sca = SglMat4.scaling([0.6, 1.65, 0.6]);
+//   stack.multiply(M_0_sca);
 
-  gl.uniformMatrix4fv(
-      this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  this.drawObject(gl, this.cone, [0.13, 0.62, 0.39, 1.0], [0, 0, 0, 1.0]);
-  stack.pop();
+//   gl.uniformMatrix4fv(
+//       this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+//   this.drawObject(gl, this.cone, [0.13, 0.62, 0.39, 1.0], [0, 0, 0, 1.0]);
+//   stack.pop();
 
-  // Tree root
-  stack.push();
-  var M_1_sca = SglMat4.scaling([0.25, 0.4, 0.25]);
-  stack.multiply(M_1_sca);
+//   // Tree root
+//   stack.push();
+//   var M_1_sca = SglMat4.scaling([0.25, 0.4, 0.25]);
+//   stack.multiply(M_1_sca);
 
-  gl.uniformMatrix4fv(
-      this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  this.drawObject(gl, this.cylinder, [0.70, 0.56, 0.35, 1.0], [0, 0, 0, 1.0]);
-  stack.pop();
-};
+//   gl.uniformMatrix4fv(
+//       this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+//   this.drawObject(gl, this.cylinder, [0.70, 0.56, 0.35, 1.0], [0, 0, 0, 1.0]);
+//   stack.pop();
+// };
 
 

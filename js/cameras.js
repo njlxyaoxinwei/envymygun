@@ -109,7 +109,7 @@ function PhotographerCamera() {
   this.updatePosition = function(t_V) {
     this.position = SglVec3.add(
         this.position, SglMat4.mul3(this.orientation, t_V));
-    if (this.position[1] > 1.8) this.position[1] = 1.8;
+    if (this.position[1] > 5) this.position[1] = 5;
     if (this.position[1] < 0.5) this.position[1] = 0.5;
   };
 

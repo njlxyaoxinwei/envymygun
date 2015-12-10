@@ -12,7 +12,7 @@ function Character(gl, client) {
     cube: new Cube(),
     cylinder: new Cylinder(10),
     cone: new Cone(10),
-    sphere: new Sphere(4),
+    sphere: new Sphere(3),
     tetrahedron: new Tetrahedron()
   };
 
@@ -32,33 +32,18 @@ Character.prototype.draw = function(stack) {
   this.updateSelf_();
 
 
-  // Wheels
-  var translations = [
-    [ 1, 0.3,  1.4],
-    [-1, 0.3,  1.4],
-    [-1, 0.3, -1.6],
-    [ 1, 0.3, -1.6]
-  ];
-  for (var i = 0; i < translations.length; i++) {
-    stack.push();
-    var M = SglMat4.translation(translations[i]);
-    stack.multiply(M);
-    this.drawWheel_(stack);
-    stack.pop();
-  }
-
-  // Chasis
+  // Body
   stack.push();
-  var M_2_tra_0 = SglMat4.translation([0, 0.3, 0]);
-  stack.multiply(M_2_tra_0);
-  var M_2_sca = SglMat4.scaling([1, 0.25, 2]);
-  stack.multiply(M_2_sca);
-  var M_2_tra_1 = SglMat4.translation([0, 1, 0]);
-  stack.multiply(M_2_tra_1);
+  stack.multiply(SglMat4.translation([0, 0.6, 0]));
+  this.drawBody_(stack);
+  stack.pop();
 
-  gl.uniformMatrix4fv(
-      client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, prims.cube, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
+
+
+  // Wheel
+  stack.push();
+  stack.multiply(SglMat4.translation([0, 0.3, 0]));
+  this.drawWheel_(stack);
   stack.pop();
 };
 
@@ -74,27 +59,6 @@ Character.prototype.getForwardV = function() {
   return isNaN(result) ? 0 : result;
 };
 
-Character.prototype.drawWheel_ = function(stack) {
-
-  var client = this.client_;
-  var gl = this.gl_;
-  var prims = this.prims_;
-
-  stack.push();
-  var M_3_sca = SglMat4.scaling([0.05, 0.3, 0.3]);
-  stack.multiply(M_3_sca);
-  var M_3_rot = SglMat4.rotationAngleAxis(sglDegToRad(90), [0, 0, 1]);
-  stack.multiply(M_3_rot);
-  var M_3_tra = SglMat4.translation([0, -1, 0]);
-  stack.multiply(M_3_tra);
-  var M_3_rot2 = SglMat4.rotationAngleAxis(this.params_.wheelTheta, [0, 1, 0]);
-  stack.multiply(M_3_rot2);
-
-  gl.uniformMatrix4fv(
-      client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, prims.cylinder, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
-  stack.pop();    
-};
 
 Character.prototype.updateSelf_ = function() {
   // Wheels
@@ -102,7 +66,54 @@ Character.prototype.updateSelf_ = function() {
       'wheelTheta', this.params_.deltaWheelTheta * this.getForwardV());
 };
 
+// [0, 2Pi)
 Character.prototype.incrParamsAngle_ = function(keyName, incr) {
   var v = this.params_[keyName];
-  this.params_[keyName] = (v + incr) % (Math.PI * 2);
+  v = (v + incr) % (Math.PI * 2);
+  if (v < 0)
+    v = v + Math.PI * 2;
+  this.params_[keyName] = v;
+}
+
+// 1 x 0.3 x 0.3
+Character.prototype.drawWheel_ = function(stack) {
+  var client = this.client_;
+  var gl = this.gl_;
+  var cylinder = this.prims_.cylinder;
+  stack.multiply(SglMat4.rotationAngleAxis(sglDegToRad(90), [0, 0, 1]));
+  stack.multiply(SglMat4.scaling([0.3, 1, 0.3]));
+  stack.multiply(SglMat4.translation([0, -1, 0]));
+  stack.multiply(SglMat4.rotationAngleAxis(
+      this.params_.wheelTheta, [0, 1, 0]));
+
+  gl.uniformMatrix4fv(
+    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  client.drawObject(
+      gl, cylinder, [0.51, 0.32, 0.0, 1.0], [0, 0, 0, 1.0]);
+}
+
+
+// Standing on the XZ-ground
+Character.prototype.drawBody_ = function(stack) {
+  var client = this.client_;
+  var gl = this.gl_;
+  var prims = this.prims_;
+
+  // Legs
+  stack.push();
+  stack.multiply(SglMat4.translation([0.12, 0.3, 0]));
+  stack.multiply(SglMat4.scaling([0.08, 0.3, 0.08]));
+  gl.uniformMatrix4fv(
+    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  client.drawObject(
+    gl, prims.cube, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
+  stack.pop();
+  stack.push();
+  stack.multiply(SglMat4.translation([-0.12, 0.3, 0]));
+  stack.multiply(SglMat4.scaling([0.08, 0.3, 0.08]));
+  gl.uniformMatrix4fv(
+    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  client.drawObject(
+    gl, prims.cube, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
+  stack.pop();  
 }
