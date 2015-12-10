@@ -54,9 +54,6 @@ Character.prototype.draw = function(stack) {
   var prims = this.prims_;
   var accHeight = 0;
 
-  // Update State
-  this.updateSelf_();
-
   // Wheel
   stack.push();
   stack.multiply(SglMat4.translation([0, 0.3, 0]));
@@ -86,7 +83,7 @@ Character.prototype.getForwardV = function() {
 };
 
 
-Character.prototype.updateSelf_ = function() {
+Character.prototype.updateSelf = function() {
 
   function zigzag(x) {
     if (x > Math.PI / 2 && x <= Math.PI * 3 / 2) {
@@ -325,4 +322,11 @@ Character.prototype.keyUp = function(keyCode) {
   var f = this.keyHandler_[keyCode];
   if (f)
     f(false);
+};
+
+Character.prototype.getEyeCoord = function() {
+  var psi = Math.atan(2 * Math.sin(this.params_.legAngle)),
+      diffHeight = 0.3 * (1 - Math.cos(psi));
+  var h = 0.6 + 0.6 * Math.cos(this.params_.legAngle) + 0.8 - diffHeight;
+  return [0, h, 0.5];
 };

@@ -20,10 +20,13 @@ NVMCClient.drawScene = function(gl) {
   var P = this.cameras[this.currentCamera].getProjectionMatrix(
       ratio, this.game.race.bbox);
   gl.uniformMatrix4fv(this.uniformShader.uProjectionMatrixLocation, false, P);
+
+  this.character.updateSelf();
   
   var stack = this.stack;
   stack.loadIdentity();
-  this.cameras[this.currentCamera].setView(stack, this.myFrame());
+  this.cameras[this.currentCamera].setView(
+      stack, this.myFrame(), this.character.getEyeCoord());
 
   // Draw Ground
   gl.uniformMatrix4fv(
