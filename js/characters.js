@@ -12,6 +12,25 @@ function Character(gl, client) {
     deltaWheelTheta: 0.025,
     legMaxAngle: 0.25,
     leftArmMaxAngle: 0.15,
+    gunThetaHorizontal: 0.0,
+    gunThetaVertical: 0.0,
+    deltaGunTheta: 0.01,
+    gunMaxThetaHorizontal: 1,
+    gunMaxThetaVertical: 1,
+    gunTurningLeft: false,
+    gunTurningRight: false,
+  };
+
+  var that = this;
+  this.keyHandler_ = {
+    T: function() {},
+    G: function() {},
+    F: function(on) {
+      that.params_.gunTurningLeft = on;
+    },
+    H: function(on) {
+      that.params_.gunTurningRight = on;
+    },
   };
 
   this.prims_ = {
@@ -96,6 +115,14 @@ Character.prototype.updateSelf_ = function() {
       m = this.params_.leftArmMaxAngle;
   this.params_.leftArmAngle = m * zigzag(v);
 
+  // Gun
+  if (this.params_.gunTurningLeft) {
+    this.aimHorizontal(false);
+  }
+  if (this.params_.gunTurningRight) {
+    this.aimHorizontal(true);
+  }
+
 };
 
 // [0, 2Pi)
@@ -158,6 +185,8 @@ Character.prototype.drawBody_ = function(stack) {
   // Gun
   stack.push();
   stack.multiply(SglMat4.translation([0.3, accHeight - 0.1, 0]));
+  stack.multiply(
+      SglMat4.rotationAngleAxis(this.params_.gunThetaHorizontal, [0, 1, 0]));
   this.drawGun_(stack);
   stack.pop();
 
@@ -275,3 +304,25 @@ Character.prototype.drawBullet_ = function(stack) {
   stack.pop();
 };
 
+Character.prototype.aimHorizontal = function(right) {
+  var e = right ? -1 : 1;
+  var v = this.params_.gunThetaHorizontal + e * this.params_.deltaGunTheta,
+      m = this.params_.gunMaxThetaHorizontal;
+  if (v > m)
+    v = m;
+  if (v < -m)
+    v = -m;
+  this.params_.gunThetaHorizontal = v;
+};
+
+Character.prototype.keyDown = function(keyCode) {
+  var f = this.keyHandler_[keyCode];
+  if (f)
+    f(true);
+}
+
+Character.prototype.keyUp = function(keyCode) { 
+  var f = this.keyHandler_[keyCode];
+  if (f)
+    f(false);
+};

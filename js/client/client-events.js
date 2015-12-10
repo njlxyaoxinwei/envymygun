@@ -49,6 +49,8 @@ NVMCClient.onKeyDown = function(keyCode, event) {
   if (carMotion)
     carMotion(true);
 
+  this.character.keyDown(keyCode);
+
   this.cameras[this.currentCamera].keyDown(keyCode);
 };
 
@@ -62,6 +64,8 @@ NVMCClient.onKeyUp = function(keyCode, event) {
   var carMotion = this.carMotionKey[keyCode];
   if (carMotion)
     carMotion(false);
+
+  this.character.keyUp(keyCode);
 
   this.cameras[this.currentCamera].keyUp(keyCode);
 };
