@@ -6,16 +6,19 @@ function Character(gl, client) {
   this.params_ = {
     wheelTheta: 0.0,
     legTheta: 0.0,
+    leftArmTheta: 0.0,
+    leftArmAngle: 0.0,
     legAngle: 0.0,
     deltaWheelTheta: 0.025,
     legMaxAngle: 0.25,
+    leftArmMaxAngle: 0.15,
   };
 
   this.prims_ = {
     cube: new Cube(),
     cylinder: new Cylinder(10),
     cone: new Cone(10),
-    sphere: new Sphere(3),
+    sphere: new Sphere(2),
     tetrahedron: new Tetrahedron()
   };
 
@@ -30,6 +33,7 @@ Character.prototype.draw = function(stack) {
   var client = this.client_;
   var gl = this.gl_;
   var prims = this.prims_;
+  var accHeight = 0;
 
   // Update State
   this.updateSelf_();
@@ -37,18 +41,16 @@ Character.prototype.draw = function(stack) {
   // Wheel
   stack.push();
   stack.multiply(SglMat4.translation([0, 0.3, 0]));
-  var wheelHeight = this.drawWheel_(stack);
+  accHeight += this.drawWheel_(stack);
   stack.pop();
 
   // Body
   var psi = Math.atan(2 * Math.sin(this.params_.legAngle)),
       diffHeight = 0.3 * (1 - Math.cos(psi));
   stack.push();
-  stack.multiply(SglMat4.translation([0, wheelHeight - diffHeight, 0]));
-  var bodyHeight = this.drawBody_(stack);
+  stack.multiply(SglMat4.translation([0, accHeight - diffHeight, 0]));
+  accHeight = accHeight + this.drawBody_(stack) - diffHeight;
   stack.pop();
-
-
 
 };
 
@@ -86,8 +88,14 @@ Character.prototype.updateSelf_ = function() {
   this.incrParamsAngle_('legTheta', incr * 2);
   var v = this.params_.legTheta,
       m = this.params_.legMaxAngle;
-
   this.params_.legAngle = m * zigzag(v);
+
+  // Left arm
+  this.incrParamsAngle_('leftArmTheta', incr / 2);
+  var v = this.params_.leftArmTheta,
+      m = this.params_.leftArmMaxAngle;
+  this.params_.leftArmAngle = m * zigzag(v);
+
 };
 
 // [0, 2Pi)
@@ -141,6 +149,18 @@ Character.prototype.drawBody_ = function(stack) {
   accHeight += this.drawTorso_(stack);
   stack.pop();
 
+  // Left Arm
+  stack.push();
+  stack.multiply(SglMat4.translation([0, accHeight, 0]));
+  this.drawArm_(stack);
+  stack.pop();
+
+  // Head
+  stack.push();
+  stack.multiply(SglMat4.translation([0, accHeight, 0]));
+  accHeight += this.drawHead_(stack);
+  stack.pop();
+
   return accHeight;
 };
 
@@ -180,3 +200,38 @@ Character.prototype.drawTorso_ = function(stack) {
   stack.pop();
   return height;
 };
+
+// Lying on XZ, along X-
+Character.prototype.drawArm_ = function(stack) {
+  var client = this.client_,
+      gl     = this.gl_,
+      cube   = this.prims_.cube,
+      angle  = this.params_.leftArmAngle;
+
+  stack.push();
+  stack.multiply(SglMat4.translation([-0.2, -0.07, 0]));
+  stack.multiply(SglMat4.rotationAngleAxis(angle, [0, 0, 1]));
+  stack.multiply(SglMat4.translation([-0.4, 0, 0]))
+  stack.multiply(SglMat4.scaling([0.4, 0.07, 0.07]));
+  gl.uniformMatrix4fv(
+    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  client.drawObject(gl, cube, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
+  stack.pop();
+}
+
+// Standing on XZ
+Character.prototype.drawHead_ = function(stack) {
+  var client = this.client_,
+      gl     = this.gl_,
+      sphere = this.prims_.sphere;
+  var height = 0.5;
+  stack.push();
+  stack.multiply(SglMat4.translation([0, height / 2, 0]));
+  stack.multiply(SglMat4.scaling([height / 2, height / 2, height / 2]));
+  gl.uniformMatrix4fv(
+    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  client.drawObject(gl, sphere, [0.8, 0.1, 0.1, 1.0], [0, 0, 0, 1.0]);
+  stack.pop();
+  return height;
+};
+
