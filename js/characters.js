@@ -34,22 +34,22 @@ Character.prototype.draw = function(stack) {
   // Update State
   this.updateSelf_();
 
+  // Wheel
+  stack.push();
+  stack.multiply(SglMat4.translation([0, 0.3, 0]));
+  var wheelHeight = this.drawWheel_(stack);
+  stack.pop();
 
   // Body
   var psi = Math.atan(2 * Math.sin(this.params_.legAngle)),
       diffHeight = 0.3 * (1 - Math.cos(psi));
   stack.push();
-  stack.multiply(SglMat4.translation([0, 0.6 - diffHeight, 0]));
-  this.drawBody_(stack);
+  stack.multiply(SglMat4.translation([0, wheelHeight - diffHeight, 0]));
+  var bodyHeight = this.drawBody_(stack);
   stack.pop();
 
 
 
-  // Wheel
-  stack.push();
-  stack.multiply(SglMat4.translation([0, 0.3, 0]));
-  this.drawWheel_(stack);
-  stack.pop();
 };
 
 Character.prototype.getForwardV = function() {
@@ -114,6 +114,7 @@ Character.prototype.drawWheel_ = function(stack) {
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
   client.drawObject(
       gl, cylinder, [0.51, 0.32, 0.0, 1.0], [0, 0, 0, 1.0]);
+  return 0.6;
 }
 
 
@@ -122,16 +123,25 @@ Character.prototype.drawBody_ = function(stack) {
   var client = this.client_;
   var gl = this.gl_;
   var prims = this.prims_;
+  var accHeight = 0;
 
   // Legs
   stack.push();
   stack.multiply(SglMat4.translation([0.12, 0, 0]));
-  this.drawLeg_(stack, this.params_.legAngle);
+  accHeight += this.drawLeg_(stack, this.params_.legAngle);
   stack.pop();
   stack.push();
   stack.multiply(SglMat4.translation([-0.12, 0, 0]));
   this.drawLeg_(stack, -this.params_.legAngle);
   stack.pop();
+
+  // Torso
+  stack.push();
+  stack.multiply(SglMat4.translation([0, accHeight, 0]));
+  accHeight += this.drawTorso_(stack);
+  stack.pop();
+
+  return accHeight;
 };
 
 // Standing on XZ
@@ -140,8 +150,10 @@ Character.prototype.drawLeg_ = function(stack, angle) {
       gl     = this.gl_,
       cube   = this.prims_.cube;
 
+  var height = 0.6 * Math.cos(angle);
+
   stack.push();
-  stack.multiply(SglMat4.translation([0, 0.6 * Math.cos(angle), 0]));
+  stack.multiply(SglMat4.translation([0, height, 0]));
   stack.multiply(SglMat4.rotationAngleAxis(angle, [1, 0, 0]));
   stack.multiply(SglMat4.translation([0, -0.3, 0]));
   stack.multiply(SglMat4.scaling([0.08, 0.3, 0.08]));
@@ -149,4 +161,22 @@ Character.prototype.drawLeg_ = function(stack, angle) {
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
   client.drawObject(gl, cube, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
   stack.pop();
+  return height;
+};
+
+// Standing on XZ
+Character.prototype.drawTorso_ = function(stack) {
+  var client = this.client_,
+      gl     = this.gl_,
+      cube   = this.prims_.cube;
+
+  var height = 0.6;
+  stack.push();
+  stack.multiply(SglMat4.translation([0, height / 2, 0]));
+  stack.multiply(SglMat4.scaling([0.3, height / 2, 0.15]));
+  gl.uniformMatrix4fv(
+    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  client.drawObject(gl, cube, [0.8, 0.15, 0.15, 1.0], [0, 0, 0, 1.0]);
+  stack.pop();
+  return height;
 };
