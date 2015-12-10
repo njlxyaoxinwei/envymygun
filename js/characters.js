@@ -253,4 +253,25 @@ Character.prototype.drawGun_ = function(stack) {
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
   client.drawObject(gl, cylinder, [0.9, 0.05, 0.05, 1.0], [0, 0, 0, 1.0]);
   stack.pop();
-}
+
+  // Bullet
+  stack.push();
+  stack.multiply(SglMat4.translation([0, 0, -0.82]));
+  this.drawBullet_(stack);
+  stack.pop();
+};
+
+Character.prototype.drawBullet_ = function(stack) {
+  var client      = this.client_,
+      gl          = this.gl_,
+      tetrahedron = this.prims_.tetrahedron;
+
+  stack.push();
+  stack.multiply(SglMat4.rotationAngleAxis(sglDegToRad(180), [1, 0, 0]));
+  stack.multiply(SglMat4.scaling([0.09, 0.09, 0.09]));
+  gl.uniformMatrix4fv(
+    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  client.drawObject(gl, tetrahedron, [1.0, 0, 0, 1.0], [0, 0, 0, 1.0]);
+  stack.pop();
+};
+
