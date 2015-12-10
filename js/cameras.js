@@ -58,7 +58,7 @@ function BirdViewCamera() {
 }
 
 function PhotographerCamera() {
-  this.position = [0, 0, 0];
+  this.position = [0, 0, 3];
   this.orientation = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
   this.t_V = [0, 0, 0];
   this.orienting_view = false;
@@ -109,7 +109,7 @@ function PhotographerCamera() {
   this.updatePosition = function(t_V) {
     this.position = SglVec3.add(
         this.position, SglMat4.mul3(this.orientation, t_V));
-    if (this.position[1] > 5) this.position[1] = 5;
+    if (this.position[1] > 2) this.position[1] = 2;
     if (this.position[1] < 0.5) this.position[1] = 0.5;
   };
 
