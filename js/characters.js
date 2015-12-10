@@ -58,6 +58,17 @@ Character.prototype.draw = function(stack) {
   stack.pop();
 };
 
+Character.prototype.getForwardV = function() {
+  var client = this.client_,
+      frame = client.myFrame(),
+      pos = client.myPos(),
+      vel = client.myVelocity();
+  var forwardLocal = [0, 0, -2],
+      forward = SglVec3.normalize(
+          SglVec3.sub(SglMat4.mul3(frame, forwardLocal), pos));
+  return SglVec3.dot(vel, forward);
+};
+
 Character.prototype.drawWheel_ = function(stack) {
 
   var client = this.client_;
@@ -77,4 +88,3 @@ Character.prototype.drawWheel_ = function(stack) {
   client.drawObject(gl, prims.cylinder, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
   stack.pop();    
 };
-
