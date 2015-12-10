@@ -2,11 +2,6 @@
 
 var NVMCClient = NVMCClient || {};
 
-var CharacterParams = {
-  wheelTheta: 0,
-  deltaWheelTheta: 5,
-};
-
 NVMCClient.drawScene = function(gl) {
   var width  = this.ui.width,
       height = this.ui.height,
@@ -30,32 +25,17 @@ NVMCClient.drawScene = function(gl) {
   stack.loadIdentity();
   this.cameras[this.currentCamera].setView(stack, this.myFrame());
 
-  // Draw Car
-  stack.push();
-  stack.multiply(this.myFrame());
-  this.drawCar(gl);
-  stack.pop();
-
-  // Draw Trees
-  var trees = this.game.race.trees;
-  for (var i = 0; i < trees.length; i++) {
-    var t = trees[i];
-    stack.push();
-    stack.multiply(SglMat4.translation(t.position));
-    this.drawTree(gl);
-    stack.pop();
-  }
-
-  // Draw Everything Else
+  // Draw Ground
   gl.uniformMatrix4fv(
       this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  this.drawObject(gl, this.track, [0.9, 0.8, 0.7, 1.0], [0, 0, 0, 1.0]);
   this.drawObject(gl, this.ground, [0.3, 0.7, 0.2, 1.0], [0, 0, 0, 1.0]);
-  for (var i = 0; i < this.buildings.length; i++) {
-    this.drawObject(gl, this.buildings[i], 
-        [0.8, 0.8, 0.8, 1.0], [0, 0, 0, 1.0]);
-  }
 
+  // Draw Character
+  stack.push();
+  stack.multiply(this.myFrame());
+  this.character.draw(stack);
+  stack.pop();
+  
   gl.useProgram(null);
   gl.disable(gl.DEPTH_TEST);
 };
@@ -113,52 +93,4 @@ NVMCClient.drawTree = function(gl) {
   stack.pop();
 };
 
-NVMCClient.drawCar = function(gl) {
-  var stack = this.stack;
 
-  // Wheels
-  var translations = [
-    [ 1, 0.3,  1.4],
-    [-1, 0.3,  1.4],
-    [-1, 0.3, -1.6],
-    [ 1, 0.3, -1.6]
-  ];
-  for (var i = 0; i < translations.length; i++) {
-    stack.push();
-    var M = SglMat4.translation(translations[i]);
-    stack.multiply(M);
-    this.drawWheel(gl);
-    stack.pop();
-  }
-
-  // Chasis
-  stack.push();
-  var M_2_tra_0 = SglMat4.translation([0, 0.3, 0]);
-  stack.multiply(M_2_tra_0);
-  var M_2_sca = SglMat4.scaling([1, 0.25, 2]);
-  stack.multiply(M_2_sca);
-  var M_2_tra_1 = SglMat4.translation([0, 1, 0]);
-  stack.multiply(M_2_tra_1);
-
-  gl.uniformMatrix4fv(
-      this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  this.drawObject(gl, this.cube, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
-  stack.pop();
-};
-
-NVMCClient.drawWheel = function(gl) {
-  var stack = this.stack;
-
-  stack.push();
-  var M_3_sca = SglMat4.scaling([0.05, 0.3, 0.3]);
-  stack.multiply(M_3_sca);
-  var M_3_rot = SglMat4.rotationAngleAxis(sglDegToRad(90), [0, 0, 1]);
-  stack.multiply(M_3_rot);
-  var M_3_tra = SglMat4.translation([0, -1, 0]);
-  stack.multiply(M_3_tra);
-
-  gl.uniformMatrix4fv(
-      this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  this.drawObject(gl, this.cylinder, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
-  stack.pop();    
-};

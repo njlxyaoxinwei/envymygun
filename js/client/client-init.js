@@ -54,47 +54,19 @@ NVMCClient.initMotionKeyHandlers = function() {
 };
 
 NVMCClient.initializeObjects = function(gl) {
-  this.createObjects();
-  this.createBuffers(gl);
-};
-
-NVMCClient.createObjects = function() {
-  // Primitives
-  this.cube = new Cube();
-  this.cylinder = new Cylinder(10);
-  this.cone = new Cone(10);
-  this.sphere = new Sphere(4);
-
-  // Track
-  this.track = new Track(this.game.race.track);
-
   // Ground
   var bbox = this.game.race.bbox;
-  var groundLevel = bbox[1] - 0.01
+  var groundLevel = bbox[1] - 0.01;
   this.ground = new Quadrilateral([
     bbox[0], groundLevel, bbox[2],
     bbox[3], groundLevel, bbox[2],
     bbox[3], groundLevel, bbox[5],
-    bbox[0], groundLevel, bbox[5]
+    bbox[0], groundLevel, bbox[5],
   ]);
-
-  // Buildings
-  this.buildings = [];
-  this.game.race.buildings.forEach(function(b) {
-    this.buildings.push(new Building(b));
-  }, this);
-};
-
-NVMCClient.createBuffers = function(gl) {
-  this.createObjectBuffers(gl, this.cube);
-  this.createObjectBuffers(gl, this.cylinder);
-  this.createObjectBuffers(gl, this.cone);
-  this.createObjectBuffers(gl, this.sphere);
-  this.createObjectBuffers(gl, this.track);
   this.createObjectBuffers(gl, this.ground);
-  this.buildings.forEach(function(b) {
-    this.createObjectBuffers(gl, b);
-  }, this);
+
+  // Character
+  this.character = new Character(gl, this);
 };
 
 NVMCClient.createObjectBuffers = function(gl, obj) {
