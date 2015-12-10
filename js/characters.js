@@ -8,7 +8,7 @@ function Character(gl, client) {
     legTheta: 0.0,
     legAngle: 0.0,
     deltaWheelTheta: 0.025,
-    legMaxAngle: 0.2,
+    legMaxAngle: 0.25,
   };
 
   this.prims_ = {
@@ -139,7 +139,7 @@ Character.prototype.drawLeg_ = function(stack, angle) {
       cube   = this.prims_.cube;
 
   stack.push();
-  stack.multiply(SglMat4.translation([0, 0.6, 0]))
+  stack.multiply(SglMat4.translation([0, 0.6 * Math.cos(angle), 0]));
   stack.multiply(SglMat4.rotationAngleAxis(angle, [1, 0, 0]));
   stack.multiply(SglMat4.translation([0, -0.3, 0]));
   stack.multiply(SglMat4.scaling([0.08, 0.3, 0.08]));
