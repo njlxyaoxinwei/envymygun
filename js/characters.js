@@ -362,26 +362,6 @@ Character.prototype.drawGun_ = function(stack) {
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
   client.drawObject(gl, cylinder, p.color, [0, 0, 0, 1.0]);
   stack.pop();
-
-  // Bullet
-  stack.push();
-  stack.multiply(SglMat4.translation([0, 0, -p.length]));
-  this.drawBullet_(stack);
-  stack.pop();
-};
-
-Character.prototype.drawBullet_ = function(stack) {
-  var client      = this.client_,
-      gl          = this.gl_,
-      tetrahedron = this.prims_.tetrahedron;
-
-  stack.push();
-  stack.multiply(SglMat4.rotationAngleAxis(sglDegToRad(180), [1, 0, 0]));
-  stack.multiply(SglMat4.scaling([0.09, 0.09, 0.09]));
-  gl.uniformMatrix4fv(
-    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, tetrahedron, [1.0, 0, 0, 1.0], [0, 0, 0, 1.0]);
-  stack.pop();
 };
 
 Character.prototype.keyDown = function(keyCode) {
@@ -414,18 +394,15 @@ Character.prototype.getGunBottomCenterCoord_ = function() {
   return result;
 };
 
-Character.prototype.getBulletCoord = function() {
+Character.prototype.getBulletFrame = function() {
   var base = this.getGunBottomCenterCoord_();
   var p = this.params_;
-  var M0 = SglMat4.rotationAngleAxis(p.gun.thetaV, [1, 0, 0]),
-      M1 = SglMat4.rotationAngleAxis(p.gun.thetaH, [0, 1, 0]),
-      M2 = SglMat4.translation([0, 0, -p.gun.length]),
-      pos = SglMat4.mul3(SglMat4.mul(M0, SglMat4.mul(M1, M2)), [0, 0, 0]);
-  return SglVec3.add(base, pos);
-};
-
-Character.prototype.getBulletDirection = function() {
-  var base = this.getGunBottomCenterCoord_();
-  var bullet = this.getBulletCoord();
-  return SglVec3.normalize(SglVec3.sub(bullet, base));
-};
+  var M0 = SglMat4.translation(base),
+      M1 = SglMat4.rotationAngleAxis(p.gun.thetaV, [1, 0, 0]),
+      M2 = SglMat4.rotationAngleAxis(p.gun.thetaH, [0, 1, 0]),
+      M3 = SglMat4.translation([0, 0, -p.gun.length]),
+      M4 = SglMat4.rotationAngleAxis(sglDegToRad(180), [1, 0, 0]);
+  var M = 
+      SglMat4.mul(M0, SglMat4.mul(M1, SglMat4.mul(M2, SglMat4.mul(M3, M4))));
+  return M;
+}

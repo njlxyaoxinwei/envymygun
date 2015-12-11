@@ -22,6 +22,7 @@ NVMCClient.drawScene = function(gl) {
   gl.uniformMatrix4fv(this.uniformShader.uProjectionMatrixLocation, false, P);
 
   this.character.updateSelf();
+  this.bullet.updateSelf();
   
   var stack = this.stack;
   stack.loadIdentity();
@@ -37,6 +38,11 @@ NVMCClient.drawScene = function(gl) {
   stack.push();
   stack.multiply(this.myFrame());
   this.character.draw(stack);
+  stack.pop();
+
+  // Draw Bullet
+  stack.push();
+  this.bullet.draw(stack);
   stack.pop();
   
   gl.useProgram(null);
