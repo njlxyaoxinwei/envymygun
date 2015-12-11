@@ -45,6 +45,8 @@ Bullet.prototype.draw = function(stack) {
 Bullet.prototype.shoot_ = function() {
   var M = SglMat4.mul(this.client_.myFrame(), this.character_.getBulletFrame());
   this.params_.shot = true;
+  this.params_.sideLength *= 2;
+  this.params_.deltaT *= 2;
   this.params_.color = [0, 0, 1.0, 1.0];
   var characterV = SglMat4.mul3(
       SglMat4.inverse(M), 
@@ -92,6 +94,8 @@ Bullet.prototype.reset = function() {
   this.params_.color = [1.0, 0, 0, 1.0];
   this.params_.shot = false;
   this.params_.position = [0, 0, 0];
+  this.params_.sideLength /= 2;
+  this.params_.deltaT /= 2;
 };
 
 Bullet.prototype.keyUp = function(keyCode) {

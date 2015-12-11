@@ -43,7 +43,7 @@ function Character(gl, client) {
       maxTH: 0.5,
       minTH: -0.5,
       maxTV: 0.5,
-      minTV: 0.0,
+      minTV: -0.1,
       turningLeft: false,
       turningRight: false,
       turningUp: false,
