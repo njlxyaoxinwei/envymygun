@@ -141,8 +141,16 @@ function PhotographerCamera() {
   this.handleKey = {};
   this.handleKey["R"] = function() {me.t_V = [0, 0.1, 0];};
   this.handleKey["V"] = function() {me.t_V = [0, -0.1, 0];};
-  this.handleKey["L"] = function() {me.lockToCar= true;};
+  this.handleKey["L"] = function() {
+    me.lockToCar= true;
+    me.lockToTarget = false;
+  }; 
   this.handleKey["U"] = function() {me.lockToCar= false;};
+  this.handleKey["P"] = function() {
+    me.lockToTarget = true;
+    me.lockToCar = false;
+  };
+  this.handleKey["O"] = function() {me.lockToTarget = false;};
 
   this.keyUp = function() {};
   
@@ -180,7 +188,7 @@ function PhotographerCamera() {
   this.updatePosition = function(t_V) {
     this.position = SglVec3.add(
         this.position, SglMat4.mul3(this.orientation, t_V));
-    if (this.position[1] > 2) this.position[1] = 2;
+    if (this.position[1] > 1.8) this.position[1] = 1.8;
     if (this.position[1] < 0.5) this.position[1] = 0.5;
   };
 
@@ -189,12 +197,14 @@ function PhotographerCamera() {
     return SglMat4.perspective(Math.PI / 4, ratio, 1, 200);
   };
 
-  this.setView = function (stack, carFrame) {
+  this.setView = function (stack, carFrame, opt) {
     this.updatePosition (this.t_V);
     var car_position = SglMat4.col(carFrame,3);
     var invV;
     if (this.lockToCar)
       invV = SglMat4.lookAt(this.position, car_position, [0, 1, 0]);
+    else if (this.lockToTarget)
+      invV = SglMat4.lookAt(this.position, opt.target.getPosition(), [0, 1, 0]);
     else
       invV = SglMat4.lookAt(
         this.position, 
