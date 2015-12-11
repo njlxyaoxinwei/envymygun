@@ -403,3 +403,29 @@ Character.prototype.getEyeCoord = function() {
   h -= sink;
   return [0, h, 0.7];
 };
+
+Character.prototype.getGunBottomCenterCoord_ = function() {
+  var p = this.params_;
+  var result = [
+    p.torso.width / 2 - p.gun.shoulderOffsetX,
+    this.getEyeCoord()[1] - p.head.radius - p.gun.radius,
+    0
+  ]; 
+  return result;
+};
+
+Character.prototype.getBulletCoord = function() {
+  var base = this.getGunBottomCenterCoord_();
+  var p = this.params_;
+  var M0 = SglMat4.rotationAngleAxis(p.gun.thetaV, [1, 0, 0]),
+      M1 = SglMat4.rotationAngleAxis(p.gun.thetaH, [0, 1, 0]),
+      M2 = SglMat4.translation([0, 0, -p.gun.length]),
+      pos = SglMat4.mul3(SglMat4.mul(M0, SglMat4.mul(M1, M2)), [0, 0, 0]);
+  return SglVec3.add(base, pos);
+};
+
+Character.prototype.getBulletDirection = function() {
+  var base = this.getGunBottomCenterCoord_();
+  var bullet = this.getBulletCoord();
+  return SglVec3.normalize(SglVec3.sub(bullet, base));
+};
