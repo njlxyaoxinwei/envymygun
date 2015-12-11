@@ -5,7 +5,7 @@ function Target(client, gl, spline) {
 
   this.params_ = {
     radius: 3,
-    speed: 1 / 5,
+    speed: 1 / 10,
     progress: 0,
     position: spline.f(0),
     color: [0.0, 1.0, 0.0, 1.0],
@@ -27,7 +27,7 @@ Target.prototype.draw = function(stack) {
   stack.multiply(SglMat4.scaling([r, r, r]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, sphere, this.params_.color, [0.0, 0.0, 0.0, 0.5]);
+  client.drawObject(gl, sphere, this.params_.color, [0.0, 0.0, 0.0, 0.1]);
   stack.pop();
 };
 
@@ -39,7 +39,7 @@ Target.prototype.updateSelf = function() {
       for (var j = 0; j < 3; j++) {
         for (var k = 0; k < 3; k++) {
           s.vertices[s.triangleIndices[i * 3 + j] * 3 + k] += 
-              s.randvs[i][k] / 30;
+              s.randvs[i][k];
         }
       }
     }
@@ -95,8 +95,13 @@ Target.prototype.prepareExplosion_ = function(sphere) {
     }
   }
   result.randvs = new Array(result.numTriangles);
+  var t = 
+      this.spline_.findTFromS(this.spline_.arclength * this.params_.progress);
   for (var i = 0; i < result.numTriangles; i++) {
-    result.randvs[i] = [Math.random(), Math.random(), Math.random()];
+    result.randvs[i] = SglVec3.add(
+      [Math.random() / 30, Math.random() / 30, Math.random() / 30],
+      SglVec3.muls(SglVec3.normalize(this.spline_.dfdt(t)), this.params_.speed)
+    );
   }
   return result;
 }
