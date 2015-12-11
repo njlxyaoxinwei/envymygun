@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>NV My Gun</title>
+  <title>NV My Simplex</title>
 
   <!-- StyleSheet -->
   <link rel="stylesheet" type="text/css" href="nvmc_lib/style.css">
@@ -47,26 +47,45 @@
 <body>
   
   <ul class="navbar">
-    <li>Objective</li>
-    <li>Coming soon...</li>
+    <li><strong>Objective</strong></li>
+    <li>Shoot the moving ball before it reaches its last column, the one with the bloody red top.</li>
+    <li><strong>List of views</strong></li>
+    <li>
+      0. <i>First-person view</i><br>
+      View from the eye of the character<br><br>
+      1. <i>Bullet Chaser view</i><br>
+      View from close to the front of the simplex (bullet). <br><br>
+      2. <i>Target Chaser view</i><br>
+      View from behind the target(ball). <br><br>
+      3. <i>Bird's-eye view</i><br>
+      Orthogonal projection viewed from the sky. Can see the whole game field.<br><br>
+      4. <i>Character Chaser view</i><br>
+      View from behind the character.<br><br>
+      5. <i>Photographer view</i><br>
+      Fixed observer at the center of the game field. Can lock view to the character or the target.<br><br>
+    </li>
   </ul>  
 
   <ul class="combar">
-    <li>Instructions</li>
+    <li><strong>Instructions</strong></li>
     <li>
-      0. Chase<br>
-      w, a, s, d<br><br>
-      1. Birdview<br>
-      w, a, s, d<br><br>
-      2. Photographer<br>
-      w, a, s, d<br>
-      r, v, l, u<br>
-      mouse
+      <i>General Instructions</i><br>
+      [1/2]: Go to the previous/next view.<br>
+      [W/S]: Character moves forward/backward.<br>
+      [A/D]: Character turns left/right.<br>
+      [Space]: Fire! <br>
+      [T/G]: Raise/Lower the gun. <br>
+      [F/H]: Point gun slightly to the left/right.<br>
+      <br>
+      <i>Special Command in Photographer View</i><br>
+      [R/V]: Stand up / Lower himself.<br>
+      [L/U]: Lock/Unlock camera to character.<br>
+      [P/O]: Lock/Unlock camera to target.<br>
     </li>
   </ul>
 
   <center>
-    <h2>Envy My Gun</h2>
+    <h2>Envy My Simplex</h2>
     <div>
       <canvas id="nvmc-canvas" width="600" height="400" style="border:1px solid gray;"></canvas>
     </div>
