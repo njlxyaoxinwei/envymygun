@@ -1,19 +1,43 @@
 /* Cameras
   0. First-person Camera
-  1. BirdView Camera
-  2. Chase Camera
-  3. Bullet Camera
-  4. Photographer Camera
+  1. Bullet Camera
+  2. Target Camera
+  3. BirdView Camera
+  4. Chase Camera
+  5. Photographer Camera
 */
 
 function CreateAllCameras() {
   return [
     new FirstPersonCamera(),
     new BulletCamera(),
+    new TargetCamera(),
     new BirdViewCamera(),
     new ChaseCamera(),
     new PhotographerCamera(),
   ];  
+}
+
+function TargetCamera() {
+  this.position = [0.0, 0.0, 0.0];
+  this.keyDown         = function() {};
+  this.keyUp           = function() {};
+  this.mouseMove       = function() {};
+  this.mouseButtonDown = function() {};
+  this.mouseButtonUp   = function() {};
+
+  this.getProjectionMatrix = function(ratio, bbox) {
+    return SglMat4.perspective(Math.PI / 4, ratio, 1, 200);
+  };
+
+  this.setView = function(stack, carFrame, opt) {
+    this.position = opt.target.getPosition();
+    var d = opt.target.getDirection();
+    stack.multiply(SglMat4.lookAt(
+        SglVec3.sub(this.position, SglVec3.muls(d, 10)),
+        SglVec3.add(this.position, d), 
+        [0, 1, 0]));
+  }; 
 }
 
 function BulletCamera() {

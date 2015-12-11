@@ -109,4 +109,14 @@ Target.prototype.prepareExplosion_ = function(sphere) {
     );
   }
   return result;
+};
+
+Target.prototype.getPosition = function() {
+  return this.params_.position;
+};
+
+Target.prototype.getDirection = function() {
+  var t =
+      this.spline_.findTFromS(this.spline_.arclength * this.params_.progress);
+  return SglVec3.normalize(this.spline_.dfdt(t));
 }
