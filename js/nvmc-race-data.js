@@ -1,5 +1,20 @@
-function rand() {
-  return 190 * Math.random() - 95;
+function randTree() {
+  function randC() {
+    return 190 * Math.random() - 95;
+  }
+  var r = 2, h = 20;
+  return {
+    position: [randC(), 0, randC()],
+    height: r + (h - 2 * r) * Math.random()
+  };
+}
+
+function getNtrees(n) {
+  var result = new Array(n);
+  for (var i = 0; i < n; i++) {
+    result[i] = randTree();
+  }
+  return result;
 }
 
 NVMC.DefaultRace = {
@@ -18,24 +33,7 @@ NVMC.DefaultRace = {
 
   lamps : [],
 
-  trees : [
-    {
-      position : [rand(), 0, rand()],
-      height   : 2 + 16 * Math.random(),
-    },
-    {
-      position : [rand(), 0, rand()],
-      height   : 2 + 16 * Math.random(),
-    },
-    {
-      position : [rand(), 0, rand()],
-      height   : 2 + 16 * Math.random(),
-    },
-    {
-      position : [rand(), 0, rand()],
-      height   : 2 + 16 * Math.random(),
-    },
-  ],
+  trees : getNtrees(10),
 
   buildings : [],
   weather : {
