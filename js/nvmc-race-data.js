@@ -14,7 +14,24 @@ NVMC.DefaultRace = {
 
   lamps : [],
 
-  trees : [],
+  trees : [
+    {
+      position : [-50, 0, 50],
+      height   : 5,
+    },
+    {
+      position : [50, 0, 50],
+      height   : 3,
+    },
+    {
+      position : [-50, 0, -50],
+      height   : 7,
+    },
+    {
+      position : [50, 0, -50],
+      height   : 9,
+    },
+  ],
 
   buildings : [],
   weather : {

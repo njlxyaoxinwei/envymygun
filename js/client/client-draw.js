@@ -35,6 +35,17 @@ NVMCClient.drawScene = function(gl) {
       this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
   this.drawObject(gl, this.ground, [0.3, 0.7, 0.2, 1.0], [0, 0, 0, 1.0]);
 
+  // Draw Trees
+  var trees = this.game.race.trees;
+  for (var t in trees) {
+    stack.push();
+    var M_8 = SglMat4.translation(trees[t].position);
+    stack.multiply(M_8);
+    this.drawTree(gl, trees[t]);
+    stack.pop();
+  }
+
+
   // Draw Character
   stack.push();
   stack.multiply(this.myFrame());
@@ -82,30 +93,30 @@ NVMCClient.drawObject = function(gl, obj, fillColor, lineColor) {
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 };
 
-// NVMCClient.drawTree = function(gl) {
-//   var stack = this.stack;
+NVMCClient.drawTree = function(gl, t) {
+  var stack = this.stack;
 
-//   // Tree Top
-//   stack.push();
-//   var M_0_tra1 = SglMat4.translation([0, 0.8, 0]);
-//   stack.multiply(M_0_tra1);
-//   var M_0_sca = SglMat4.scaling([0.6, 1.65, 0.6]);
-//   stack.multiply(M_0_sca);
+  // Tree Top
+  stack.push();
+  var M_0_tra1 = SglMat4.translation([0, t.height - 3, 0]);
+  stack.multiply(M_0_tra1);
+  var M_0_sca = SglMat4.scaling([0.6, 1.5, 0.6]);
+  stack.multiply(M_0_sca);
 
-//   gl.uniformMatrix4fv(
-//       this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-//   this.drawObject(gl, this.cone, [0.13, 0.62, 0.39, 1.0], [0, 0, 0, 1.0]);
-//   stack.pop();
+  gl.uniformMatrix4fv(
+      this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  this.drawObject(gl, this.cone, [0.13, 0.62, 0.39, 1.0], [0, 0, 0, 1.0]);
+  stack.pop();
 
-//   // Tree root
-//   stack.push();
-//   var M_1_sca = SglMat4.scaling([0.25, 0.4, 0.25]);
-//   stack.multiply(M_1_sca);
+  // Tree root
+  stack.push();
+  var M_1_sca = SglMat4.scaling([0.25, t.height / 2 - 1.5, 0.25]);
+  stack.multiply(M_1_sca);
 
-//   gl.uniformMatrix4fv(
-//       this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-//   this.drawObject(gl, this.cylinder, [0.70, 0.56, 0.35, 1.0], [0, 0, 0, 1.0]);
-//   stack.pop();
-// };
+  gl.uniformMatrix4fv(
+      this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
+  this.drawObject(gl, this.cylinder, [0.70, 0.56, 0.35, 1.0], [0, 0, 0, 1.0]);
+  stack.pop();
+};
 
 

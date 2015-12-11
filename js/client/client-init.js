@@ -65,6 +65,12 @@ NVMCClient.initializeObjects = function(gl) {
   ]);
   this.createObjectBuffers(gl, this.ground);
 
+  // Tree
+  this.cylinder = new Cylinder(10);
+  this.createObjectBuffers(gl, this.cylinder);
+  this.cone = new Cone(10);
+  this.createObjectBuffers(gl, this.cone);
+
   // Character
   this.character = new Character(gl, this);
   this.target = new Target(this, gl);
