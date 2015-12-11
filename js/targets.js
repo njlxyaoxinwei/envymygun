@@ -29,6 +29,7 @@ Target.prototype.draw = function(stack) {
 
 Target.prototype.updateSelf = function() {
   if (this.exploding) {
+    var gl = this.gl_
     var s = this.sphere;
     for (var i = 0; i < s.numTriangles; i++) {
       for (var j = 0; j < 3; j++) {
@@ -38,7 +39,9 @@ Target.prototype.updateSelf = function() {
         }
       }
     }
-    this.client_.createObjectBuffers(this.gl_, this.sphere);
+    gl.bindBuffer(gl.ARRAY_BUFFER, s.vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, s.vertices, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
   }
 };
 
