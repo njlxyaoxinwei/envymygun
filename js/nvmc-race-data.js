@@ -1,3 +1,7 @@
+function rand() {
+  return 190 * Math.random() - 95;
+}
+
 NVMC.DefaultRace = {
   startPosition : [ 0,0,0 ],
 
@@ -16,20 +20,20 @@ NVMC.DefaultRace = {
 
   trees : [
     {
-      position : [-50, 0, 50],
-      height   : 5,
+      position : [rand(), 0, rand()],
+      height   : 2 + 6 * Math.random(),
     },
     {
-      position : [50, 0, 50],
-      height   : 3,
+      position : [rand(), 0, rand()],
+      height   : 2 + 6 * Math.random(),
     },
     {
-      position : [-50, 0, -50],
-      height   : 7,
+      position : [rand(), 0, rand()],
+      height   : 2 + 6 * Math.random(),
     },
     {
-      position : [50, 0, -50],
-      height   : 9,
+      position : [rand(), 0, rand()],
+      height   : 2 + 6 * Math.random(),
     },
   ],
 

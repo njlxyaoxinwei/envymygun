@@ -4,7 +4,7 @@ function Target(client, gl, spline) {
   this.spline_ = spline;
 
   this.params_ = {
-    radius: 3,
+    radius: 2,
     speed: 1 / 10,
     progress: 0,
     position: spline.f(0),
@@ -12,7 +12,7 @@ function Target(client, gl, spline) {
   };
 
   this.exploding = false;
-  this.sphere = new Sphere(4);
+  this.sphere = new Sphere(2);
   client.createObjectBuffers(gl, this.sphere);
 }
 
@@ -27,7 +27,7 @@ Target.prototype.draw = function(stack) {
   stack.multiply(SglMat4.scaling([r, r, r]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, sphere, this.params_.color, [0.0, 0.0, 0.0, 0.1]);
+  client.drawObject(gl, sphere, this.params_.color, [0, 0, 0, 1.0]);
   stack.pop();
 };
 
@@ -54,6 +54,8 @@ Target.prototype.updateSelf = function() {
           this.spline_.getPointFromPercentage(this.params_.progress);
       this.params_.color = 
           [this.params_.progress, 1 - this.params_.progress, 0.0, 1.0];
+  } else {
+    this.params_.radius = 0.1;
   }
 };
 
