@@ -8,7 +8,7 @@ function Target(client, gl) {
     color: [0.5, 0.5, 0.5, 1.0],
   };
 
-  this.sphere = new Sphere(3);
+  this.sphere = new Sphere(4);
   client.createObjectBuffers(gl, this.sphere);
 }
 
