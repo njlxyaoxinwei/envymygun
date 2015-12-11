@@ -50,7 +50,7 @@ function ChaseCamera() {
 
   this.setView = function(stack, carFrame, opt) {
     var Rx = SglMat4.rotationAngleAxis(
-        opt.character.getEyeAngle(), [1.0, 0.0, 0.0]);
+        sglDegToRad(-10) + opt.character.getEyeAngle(), [1.0, 0.0, 0.0]);
     var T  = SglMat4.translation([0.0, 2.5, 4.5]);
     var V_0 = SglMat4.mul(carFrame, SglMat4.mul(T, Rx));
     this.position = SglMat4.col(V_0, 3);
