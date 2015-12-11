@@ -56,12 +56,14 @@ Target.prototype.updateSelf = function() {
       this.params_.color = 
           [this.params_.progress, 1 - this.params_.progress, 0.0, 1.0];
   } else if (this.fail < 1) {
-    this.fail += 0.01
+    this.fail += 0.01;
+    if (this.fail >=1) {
+      NVMC.log("\nTarget Missed!\n[GAME OVER]");
+    }
   }
 };
 
 Target.prototype.explode = function() {
-  console.log("EXPLODE");
   this.exploding = true;
   var sphere = this.prepareExplosion_(this.sphere);
   this.client_.createObjectBuffers(this.gl_, sphere);

@@ -137,7 +137,7 @@ Bullet.prototype.getFrame = function() {
 }
 
 Bullet.prototype.done = function() {
-  console.log("DONE!");
+  NVMC.log("\nTarget Hit!\n[YOU WIN]");
   this.velocity_ = [0, 0, 0];
   this.params_.maxSideLength *= 5;
   this.params_.deltaT /= 2;
