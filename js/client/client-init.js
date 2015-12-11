@@ -82,6 +82,7 @@ NVMCClient.initializeObjects = function(gl) {
     points[0], points[1], points[2], points[3]
   );
   var n = 3 * Math.floor((points.length - 1) / 3);
+  this.lastControlTreeIndex = n;
   for (var i = 3; i + 3 <= n; i += 3) {
     mySpline = new CompositeSpline(
         mySpline, 

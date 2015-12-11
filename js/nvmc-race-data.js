@@ -33,7 +33,7 @@ NVMC.DefaultRace = {
 
   lamps : [],
 
-  trees : getNtrees(10),
+  trees : getNtrees(20),
 
   buildings : [],
   weather : {

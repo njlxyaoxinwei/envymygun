@@ -113,9 +113,9 @@ CompositeSpline.prototype.f = function(t) {
 
 CompositeSpline.prototype.dfdt = function(t) {
   if (t <= 0.5) {
-    return 2 * this.s1.dfdt(t * 2);
+    return this.s1.dfdt(t * 2);
   } else {
-    return 2 * this.s2.dfdt(2 * t - 1);
+    return this.s2.dfdt(2 * t - 1);
   }
 };
 

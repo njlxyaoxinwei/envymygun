@@ -52,7 +52,7 @@ Target.prototype.updateSelf = function() {
         this.params_.progress = 1;
       this.params_.position = 
           this.spline_.getPointFromPercentage(this.params_.progress);
-      
+
       this.params_.color = 
           [this.params_.progress, 1 - this.params_.progress, 0.0, 1.0];
   } else if (this.fail < 1) {

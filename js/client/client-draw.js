@@ -40,12 +40,13 @@ NVMCClient.drawScene = function(gl) {
 
   // Draw Trees
   var trees = this.game.race.trees;
+  var n = this.lastControlTreeIndex;
   for (var i = 0; i < trees.length; i++) {
     stack.push();
     var M_8 = SglMat4.translation(trees[i].position);
     stack.multiply(M_8);
-    if (i < 4) {
-      this.drawTree(gl, trees[i], [i / 3, 1 - i / 3, 0, 1.0]);
+    if (i % 3 == 0) {
+      this.drawTree(gl, trees[i], [i / n, 1 - i / n, 0, 1.0]);
     } else {
       this.drawTree(gl, trees[i], [0.13, 0.62, 0.39, 1.0])
     }
