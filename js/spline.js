@@ -87,4 +87,11 @@ BezierSpline.prototype.findTFromS = function(s) {
     var a = (s2 - s) / (s2 - s1);
     return a * t1 + (1 - a) * t2;
   }
+};
+
+BezierSpline.prototype.getPointFromPercentage = function(a) {
+  if (a < 0 || a > 1) {
+    throw 'Bezier Error : parameter outside [0,1]'
+  }
+  return this.f(this.findTFromS(this.arclength * a));
 }
