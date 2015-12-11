@@ -2,18 +2,39 @@
   0. First-person Camera
   1. BirdView Camera
   2. Chase Camera
-  3. Photographer Camera
+  3. Bullet Camera
+  4. Photographer Camera
 */
 
 function CreateAllCameras() {
   return [
     new FirstPersonCamera(),
+    new BulletCamera(),
     new BirdViewCamera(),
     new ChaseCamera(),
     new PhotographerCamera(),
   ];  
 }
 
+function BulletCamera() {
+  this.position = [0.0, 0.0, 0.0];
+  this.keyDown         = function() {};
+  this.keyUp           = function() {};
+  this.mouseMove       = function() {};
+  this.mouseButtonDown = function() {};
+  this.mouseButtonUp   = function() {};
+
+  this.getProjectionMatrix = function(ratio, bbox) {
+    return SglMat4.perspective(Math.PI / 4, ratio, 0.1, 200);
+  };
+
+  this.setView = function(stack, carFrame, opt) {
+    var V_0 = opt.bullet.getFrame();
+    this.position = SglMat4.col(V_0, 3);
+    var invV = SglMat4.inverse(V_0);
+    stack.multiply(invV);
+  };
+}
 
 function ChaseCamera() {
   this.position = [0.0, 0.0, 0.0];

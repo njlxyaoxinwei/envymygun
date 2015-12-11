@@ -40,11 +40,15 @@ NVMCClient.drawScene = function(gl) {
 
   // Draw Trees
   var trees = this.game.race.trees;
-  for (var t in trees) {
+  for (var i = 0; i < trees.length; i++) {
     stack.push();
-    var M_8 = SglMat4.translation(trees[t].position);
+    var M_8 = SglMat4.translation(trees[i].position);
     stack.multiply(M_8);
-    this.drawTree(gl, trees[t]);
+    if (i < 4) {
+      this.drawTree(gl, trees[i], [i / 3, 1 - i / 3, 0, 1.0]);
+    } else {
+      this.drawTree(gl, trees[i], [0.13, 0.62, 0.39, 1.0])
+    }
     stack.pop();
   }
 
@@ -96,7 +100,7 @@ NVMCClient.drawObject = function(gl, obj, fillColor, lineColor) {
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 };
 
-NVMCClient.drawTree = function(gl, t) {
+NVMCClient.drawTree = function(gl, t, color) {
   var stack = this.stack;
 
   // Tree Top
@@ -108,7 +112,7 @@ NVMCClient.drawTree = function(gl, t) {
 
   gl.uniformMatrix4fv(
       this.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  this.drawObject(gl, this.cone, [0.13, 0.62, 0.39, 1.0], [0, 0, 0, 1.0]);
+  this.drawObject(gl, this.cone, color, [0, 0, 0, 1.0]);
   stack.pop();
 
   // Tree root

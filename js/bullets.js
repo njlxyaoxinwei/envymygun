@@ -122,6 +122,20 @@ Bullet.prototype.getPos = function() {
   return result;
 };
 
+Bullet.prototype.getFrame = function() {
+  var result;
+  var M_tra = SglMat4.translation(this.params_.position);
+  if (this.params_.shot) {
+    result = SglMat4.mul(this.M_, M_tra);
+  } else {
+    result = SglMat4.mul(
+        this.client_.myFrame(), this.character_.getBulletFrame());
+    result = SglMat4.mul(result, M_tra);
+  }
+  result = SglMat4.mul(result, SglMat4.rotationAngleAxis(Math.PI, [1, 0, 0]));
+  return result;
+}
+
 Bullet.prototype.done = function() {
   console.log("DONE!");
   this.velocity_ = [0, 0, 0];
