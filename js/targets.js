@@ -7,7 +7,7 @@ function Target(client, gl) {
     position: [10, 3, 10],
     color: [0.5, 0.5, 0.5, 1.0],
   };
-
+  this.exploding = false;
   this.sphere = new Sphere(4);
   client.createObjectBuffers(gl, this.sphere);
 }

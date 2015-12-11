@@ -384,6 +384,10 @@ Character.prototype.getEyeCoord = function() {
   return [0, h, 0.7];
 };
 
+Character.prototype.getEyeAngle = function() {
+  return this.params_.gun.thetaV / 2 ;
+};
+
 Character.prototype.getGunBottomCenterCoord_ = function() {
   var p = this.params_;
   var result = [

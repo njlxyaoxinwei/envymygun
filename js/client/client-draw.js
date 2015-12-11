@@ -28,7 +28,7 @@ NVMCClient.drawScene = function(gl) {
   var stack = this.stack;
   stack.loadIdentity();
   this.cameras[this.currentCamera].setView(
-      stack, this.myFrame(), this.character.getEyeCoord());
+      stack, this.myFrame(), this.character);
 
   // Draw Ground
   gl.uniformMatrix4fv(

@@ -49,9 +49,11 @@ function FirstPersonCamera() {
     return SglMat4.perspective(Math.PI/4, ratio, 1, 200);
   };
 
-  this.setView = function(stack, carFrame, localCoord) {
-    var T  = SglMat4.translation(localCoord);
-    var V_0 = SglMat4.mul(carFrame, T);
+  this.setView = function(stack, carFrame, character) {
+    var R   = SglMat4.rotationAngleAxis(
+        character.getEyeAngle(), [1.0, 0.0, 0.0]);
+    var T   = SglMat4.translation(character.getEyeCoord());
+    var V_0 = SglMat4.mul(carFrame, SglMat4.mul(T, R));
     this.position = SglMat4.col(V_0, 3);
     var invV = SglMat4.inverse(V_0);
     stack.multiply(invV);
