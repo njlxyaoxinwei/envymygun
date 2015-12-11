@@ -4,37 +4,18 @@ function Character(gl, client) {
   this.gl_ = gl;
 
   this.params_ = {
-    wheelTheta: 0.0,
-    legTheta: 0.0,
-    leftArmTheta: 0.0,
-    leftArmAngle: 0.0,
-    legAngle: 0.0,
-    deltaWheelTheta: 0.025,
-    legMaxAngle: 0.25,
-    leftArmMaxAngle: 0.15,
-    gunThetaHorizontal: 0.0,
-    gunThetaVertical: 0.0,
-    deltaGunTheta: 0.01,
-    gunMaxThetaHorizontal: 0.5,
-    gunMaxThetaVertical: 0.5,
-    gunTurningLeft: false,
-    gunTurningRight: false,
-    gunTurningUp: false,
-    gunTurningDown: false,
-  };
-
-  this.params = {
     wheel: {
       theta: 0.0,
       deltaT: 0.025,
       radius: 0.3,
-      length: 2,
+      length: 1,
       color: [0.51, 0.32, 0.0, 1.0],
     },
     leg: {
-      theta: 0.0,
+      angle: 0.0,
+      t: 0.0,
       deltaT: 0.05,
-      maxT: 0.25,
+      maxAngle: 0.25,
       sideLength: 0.16,
       length: 0.6,
       spaceBetween: 0.24,
@@ -47,9 +28,9 @@ function Character(gl, client) {
       color: [0.8, 0.15, 0.15, 1.0],
     },
     leftArm: {
-      theta: 0.0,
+      t: 0.0,
       deltaT: 0.0125,
-      maxT: 0.15,
+      maxAngle: 0.15,
       sideLength: 0.14,
       length: 0.8,
       shoulderOffsetX: 0.1,
@@ -80,18 +61,10 @@ function Character(gl, client) {
 
   var that = this;
   this.keyHandler_ = {
-    T: function(on) {
-      that.params_.gunTurningUp  = on;
-    },
-    G: function(on) {
-      that.params_.gunTurningDown = on;
-    },
-    F: function(on) {
-      that.params_.gunTurningLeft = on;
-    },
-    H: function(on) {
-      that.params_.gunTurningRight = on;
-    },
+    T: function(on) { that.params_.gun.turningUp = on; },
+    G: function(on) { that.params_.gun.turningDown = on; },
+    F: function(on) { that.params_.gun.turningLeft = on; },
+    H: function(on) { that.params_.gun.turningRight = on; },
   };
 
   this.prims_ = {
@@ -116,20 +89,30 @@ Character.prototype.draw = function(stack) {
   var accHeight = 0;
 
   // Wheel
+  var radius = this.params_.wheel.radius;
   stack.push();
-  stack.multiply(SglMat4.translation([0, 0.3, 0]));
-  accHeight += this.drawWheel_(stack);
+  stack.multiply(SglMat4.translation([0, radius, 0]));
+  this.drawWheel_(stack);
+  accHeight += 2 * radius;
   stack.pop();
 
   // Body
-  var psi = Math.atan(2 * Math.sin(this.params_.legAngle)),
-      diffHeight = 0.3 * (1 - Math.cos(psi));
+  var diffHeight = this.getBodySink_();
+  accHeight -= diffHeight;
   stack.push();
-  stack.multiply(SglMat4.translation([0, accHeight - diffHeight, 0]));
-  accHeight = accHeight + this.drawBody_(stack) - diffHeight;
+  stack.multiply(SglMat4.translation([0, accHeight, 0]));
+  this.drawBody_(stack);
   stack.pop();
-
 };
+
+Character.prototype.getBodySink_ = function() {
+  var psi = Math.atan(2 * Math.sin(this.params_.leg.angle));
+  return this.params_.wheel.radius * (1 - Math.cos(psi));
+};
+
+Character.prototype.getLegSink_ = function() {
+  return this.params_.leg.length * (1 - Math.cos(this.params_.leg.angle));
+}
 
 Character.prototype.getForwardV = function() {
   var client = this.client_,
@@ -156,64 +139,81 @@ Character.prototype.updateSelf = function() {
     }
   }
 
-
-  // Wheels
-  var incr = this.params_.deltaWheelTheta * this.getForwardV();
-  this.incrParamsAngle_('wheelTheta', incr);
+  var f = this.getForwardV();
+  // Wheel
+  var incr = this.params_.wheel.deltaT * f;
+  this.incrParamsAngle_(this.params_.wheel, 'theta', incr);
 
   // Legs
-  this.incrParamsAngle_('legTheta', incr * 2);
-  var v = this.params_.legTheta,
-      m = this.params_.legMaxAngle;
-  this.params_.legAngle = m * zigzag(v);
+  var incr1 = this.params_.leg.deltaT * f;
+  this.incrParamsAngle_(this.params_.leg, 't', incr1)
+  var v1 = this.params_.leg.t;
+      m1 = this.params_.leg.maxAngle;
+  this.params_.leg.angle = m1 * zigzag(v1);
 
   // Left arm
-  this.incrParamsAngle_('leftArmTheta', incr / 2);
-  var v = this.params_.leftArmTheta,
-      m = this.params_.leftArmMaxAngle;
-  this.params_.leftArmAngle = m * zigzag(v);
+  var incr2 = this.params_.leftArm.deltaT * f;
+  this.incrParamsAngle_(this.params_.leftArm, 't', incr2);
+  var v2 = this.params_.leftArm.t,
+      m2 = this.params_.leftArm.maxAngle;
+  this.params_.leftArm.angle = m2 * zigzag(v2);
 
   // Gun
-  if (this.params_.gunTurningLeft) {
-    this.aimHorizontal(false);
+  var p = this.params_.gun;
+  if (p.turningLeft) {
+    this.incrParamsAngleInRange_(p, 'thetaH', p.deltaT, [p.minTH, p.maxTH]);
   }
-  if (this.params_.gunTurningRight) {
-    this.aimHorizontal(true);
+  if (p.turningRight) {
+    this.incrParamsAngleInRange_(p, 'thetaH', -p.deltaT, [p.minTH, p.maxTH]);
   }
-  if (this.params_.gunTurningUp) {
-    this.aimVertical(true);
+  if (p.turningUp) {
+    this.incrParamsAngleInRange_(p, 'thetaV', p.deltaT, [p.minTV, p.maxTV]);
   }
-  if (this.params_.gunTurningDown) {
-    this.aimVertical(false);
+  if (p.turningDown) {
+    this.incrParamsAngleInRange_(p, 'thetaV', -p.deltaT, [p.minTV, p.maxTV]);
   }
 
 };
 
-// [0, 2Pi)
-Character.prototype.incrParamsAngle_ = function(keyName, incr) {
-  var v = this.params_[keyName];
-  v = (v + incr) % (Math.PI * 2);
+// Normalize to [0, 2Pi)
+Character.prototype.incrParamsAngle_ = function(p, keyName, inc) {
+  var v = p[keyName];
+  v = (v + inc) % (Math.PI * 2);
   if (v < 0)
     v = v + Math.PI * 2;
-  this.params_[keyName] = v;
+  p[keyName] = v;
+};
+
+// Clip to range
+Character.prototype.incrParamsAngleInRange_ = function(p, keyName, inc, range) {
+  var v = p[keyName] + inc;
+  if (range !== undefined) {
+    if (v > range[1])
+      v = range[1];
+    else if (v < range[0])
+      v = range[0];
+  };
+  p[keyName] = v;
 }
 
-// 1 x 0.3 x 0.3
+// Centered at origin, lying along X.
 Character.prototype.drawWheel_ = function(stack) {
   var client = this.client_;
   var gl = this.gl_;
   var cylinder = this.prims_.cylinder;
+  var radius = this.params_.wheel.radius,
+      length = this.params_.wheel.length,
+      theta  = this.params_.wheel.theta,
+      color  = this.params_.wheel.color;
+
   stack.multiply(SglMat4.rotationAngleAxis(sglDegToRad(90), [0, 0, 1]));
-  stack.multiply(SglMat4.scaling([0.3, 1, 0.3]));
+  stack.multiply(SglMat4.scaling([radius, length, radius]));
   stack.multiply(SglMat4.translation([0, -1, 0]));
-  stack.multiply(SglMat4.rotationAngleAxis(
-      this.params_.wheelTheta, [0, 1, 0]));
+  stack.multiply(SglMat4.rotationAngleAxis(theta, [0, 1, 0]));
 
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(
-      gl, cylinder, [0.51, 0.32, 0.0, 1.0], [0, 0, 0, 1.0]);
-  return 0.6;
+  client.drawObject(gl, cylinder, color, [0, 0, 0, 1.0]);
 }
 
 
@@ -221,101 +221,112 @@ Character.prototype.drawWheel_ = function(stack) {
 Character.prototype.drawBody_ = function(stack) {
   var client = this.client_;
   var gl = this.gl_;
-  var prims = this.prims_;
   var accHeight = 0;
 
   // Legs
+  var legP = this.params_.leg;
   stack.push();
-  stack.multiply(SglMat4.translation([0.12, 0, 0]));
-  accHeight += this.drawLeg_(stack, this.params_.legAngle);
+  stack.multiply(SglMat4.translation([legP.spaceBetween / 2, 0, 0]));
+  this.drawLeg_(stack, legP.angle);
   stack.pop();
   stack.push();
-  stack.multiply(SglMat4.translation([-0.12, 0, 0]));
-  this.drawLeg_(stack, -this.params_.legAngle);
+  stack.multiply(SglMat4.translation([-legP.spaceBetween / 2, 0, 0]));
+  this.drawLeg_(stack, -legP.angle);
   stack.pop();
+  accHeight += legP.length - this.getLegSink_();
 
   // Torso
+  var torsoP = this.params_.torso;
   stack.push();
   stack.multiply(SglMat4.translation([0, accHeight, 0]));
-  accHeight += this.drawTorso_(stack);
+  this.drawTorso_(stack);
   stack.pop();
+  accHeight += torsoP.height;
 
   // Left Arm
+  var armP = this.params_.leftArm,
+      offset = armP.shoulderOffsetX - torsoP.width / 2,
+      halfH = armP.sideLength / 2;
   stack.push();
-  stack.multiply(SglMat4.translation([-0.2, accHeight - 0.07, 0]));
+  stack.multiply(SglMat4.translation([offset, accHeight - halfH, 0]));
   this.drawArm_(stack);
   stack.pop();
 
   // Gun
+  var gunP = this.params_.gun,
+      radius = gunP.radius,
+      offset = torsoP.width / 2 - gunP.shoulderOffsetX;
   stack.push();
-  stack.multiply(SglMat4.translation([0.3, accHeight - 0.1, 0]));
-  stack.multiply(
-      SglMat4.rotationAngleAxis(this.params_.gunThetaVertical, [1, 0, 0]));
-  stack.multiply(
-      SglMat4.rotationAngleAxis(this.params_.gunThetaHorizontal, [0, 1, 0]));
+  stack.multiply(SglMat4.translation([offset, accHeight - radius, 0]));
+  stack.multiply(SglMat4.rotationAngleAxis(gunP.thetaV, [1, 0, 0]));
+  stack.multiply(SglMat4.rotationAngleAxis(gunP.thetaH, [0, 1, 0]));
   this.drawGun_(stack);
   stack.pop();
 
   // Head
   stack.push();
   stack.multiply(SglMat4.translation([0, accHeight, 0]));
-  accHeight += this.drawHead_(stack);
+  this.drawHead_(stack);
   stack.pop();
-
-  return accHeight;
 };
 
 // Standing on XZ
 Character.prototype.drawLeg_ = function(stack, angle) {
   var client = this.client_,
       gl     = this.gl_,
-      cube   = this.prims_.cube;
+      cube   = this.prims_.cube,
+      p      = this.params_.leg;
 
-  var height = 0.6 * Math.cos(angle);
+  var height = p.length - this.getLegSink_(),
+      halfL  = p.length / 2,
+      halfS  = p.sideLength / 2;
 
   stack.push();
   stack.multiply(SglMat4.translation([0, height, 0]));
   stack.multiply(SglMat4.rotationAngleAxis(angle, [1, 0, 0]));
-  stack.multiply(SglMat4.translation([0, -0.3, 0]));
-  stack.multiply(SglMat4.scaling([0.08, 0.3, 0.08]));
+  stack.multiply(SglMat4.translation([0, -halfL, 0]));
+  stack.multiply(SglMat4.scaling([halfS, halfL, halfS]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, cube, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
+  client.drawObject(gl, cube, p.color, [0, 0, 0, 1.0]);
   stack.pop();
-  return height;
 };
 
 // Standing on XZ
 Character.prototype.drawTorso_ = function(stack) {
   var client = this.client_,
       gl     = this.gl_,
-      cube   = this.prims_.cube;
+      cube   = this.prims_.cube,
+      p      = this.params_.torso;
 
-  var height = 0.6;
+  var halfH = p.height / 2,
+      halfW = p.width / 2,
+      halfT = p.thickness / 2;
   stack.push();
-  stack.multiply(SglMat4.translation([0, height / 2, 0]));
-  stack.multiply(SglMat4.scaling([0.3, height / 2, 0.15]));
+  stack.multiply(SglMat4.translation([0, halfH, 0]));
+  stack.multiply(SglMat4.scaling([halfW, halfH, halfT]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, cube, [0.8, 0.15, 0.15, 1.0], [0, 0, 0, 1.0]);
+  client.drawObject(gl, cube, p.color, [0, 0, 0, 1.0]);
   stack.pop();
-  return height;
 };
 
-// halved by XZ, along X-
+// halved by XZ, along X- from the origin
 Character.prototype.drawArm_ = function(stack) {
   var client = this.client_,
       gl     = this.gl_,
       cube   = this.prims_.cube,
-      angle  = this.params_.leftArmAngle;
+      p      = this.params_.leftArm;
 
+  var halfL = p.length / 2,
+      halfS = p.sideLength / 2;  
   stack.push();
-  stack.multiply(SglMat4.rotationAngleAxis(angle, [0, 0, 1]));
-  stack.multiply(SglMat4.translation([-0.4, 0, 0]))
-  stack.multiply(SglMat4.scaling([0.4, 0.07, 0.07]));
+  stack.multiply(SglMat4.rotationAngleAxis(p.angle, [0, 0, 1]));
+  stack.multiply(SglMat4.translation([-halfL, 0, 0]))
+  stack.multiply(SglMat4.scaling([halfL, halfS, halfS]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, cube, [0.8, 0.2, 0.2, 1.0], [0, 0, 0, 1.0]);
+  client.drawObject(gl, cube, p.color, [0, 0, 0, 1.0]);
   stack.pop();
 }
 
@@ -323,35 +334,38 @@ Character.prototype.drawArm_ = function(stack) {
 Character.prototype.drawHead_ = function(stack) {
   var client = this.client_,
       gl     = this.gl_,
-      sphere = this.prims_.sphere;
-  var height = 0.4;
+      sphere = this.prims_.sphere,
+      p      = this.params_.head;
+
   stack.push();
-  stack.multiply(SglMat4.translation([0, height / 2, 0]));
-  stack.multiply(SglMat4.scaling([height / 2, height / 2, height / 2]));
+  stack.multiply(SglMat4.translation([0, p.radius, 0]));
+  stack.multiply(SglMat4.scaling([p.radius, p.radius, p.radius]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, sphere, [0.8, 0.1, 0.1, 1.0], [0, 0, 0, 1.0]);
+  client.drawObject(gl, sphere, p.color, [0, 0, 0, 1.0]);
   stack.pop();
-  return height;
 };
 
-// halved by XZ, lying on Z-
+// halved by XZ, lying on Z- from the origin
 Character.prototype.drawGun_ = function(stack) {
   var client   = this.client_,
       gl       = this.gl_,
-      cylinder = this.prims_.cylinder;
+      cylinder = this.prims_.cylinder,
+      p        = this.params_.gun;
 
+  var radius = p.radius,
+      halfL  = p.length / 2;
   stack.push();
   stack.multiply(SglMat4.rotationAngleAxis(sglDegToRad(-90), [1, 0, 0]));
-  stack.multiply(SglMat4.scaling([0.1, 0.4, 0.1]));
+  stack.multiply(SglMat4.scaling([radius, halfL, radius]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, cylinder, [0.9, 0.05, 0.05, 1.0], [0, 0, 0, 1.0]);
+  client.drawObject(gl, cylinder, p.color, [0, 0, 0, 1.0]);
   stack.pop();
 
   // Bullet
   stack.push();
-  stack.multiply(SglMat4.translation([0, 0, -0.82]));
+  stack.multiply(SglMat4.translation([0, 0, -p.length]));
   this.drawBullet_(stack);
   stack.pop();
 };
@@ -370,29 +384,6 @@ Character.prototype.drawBullet_ = function(stack) {
   stack.pop();
 };
 
-Character.prototype.aimHorizontal = function(right) {
-  var e = right ? -1 : 1;
-  var v = this.params_.gunThetaHorizontal + e * this.params_.deltaGunTheta,
-      m = this.params_.gunMaxThetaHorizontal;
-  if (v > m)
-    v = m;
-  if (v < -m)
-    v = -m;
-  this.params_.gunThetaHorizontal = v;
-};
-
-Character.prototype.aimVertical = function(up) {
-  var e = up ? 1 : -1;
-  var v = this.params_.gunThetaVertical + e * this.params_.deltaGunTheta,
-      m = this.params_.gunMaxThetaVertical;
-  if (v > m)
-    v = m;
-  if (v < 0)
-    v = 0;
-  this.params_.gunThetaVertical = v;
-}
-
-
 Character.prototype.keyDown = function(keyCode) {
   var f = this.keyHandler_[keyCode];
   if (f)
@@ -406,8 +397,9 @@ Character.prototype.keyUp = function(keyCode) {
 };
 
 Character.prototype.getEyeCoord = function() {
-  var psi = Math.atan(2 * Math.sin(this.params_.legAngle)),
-      diffHeight = 0.3 * (1 - Math.cos(psi));
-  var h = 0.6 + 0.6 * Math.cos(this.params_.legAngle) + 0.8 - diffHeight;
+  var p = this.params_;
+  var sink = this.getLegSink_() + this.getBodySink_();
+  var h = p.leg.length + p.wheel.radius * 2 + p.torso.height + p.head.radius;
+  h -= sink;
   return [0, h, 0.7];
 };
