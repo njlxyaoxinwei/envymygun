@@ -23,6 +23,61 @@ function Character(gl, client) {
     gunTurningDown: false,
   };
 
+  this.params = {
+    wheel: {
+      theta: 0.0,
+      deltaT: 0.025,
+      radius: 0.3,
+      length: 2,
+      color: [0.51, 0.32, 0.0, 1.0],
+    },
+    leg: {
+      theta: 0.0,
+      deltaT: 0.05,
+      maxT: 0.25,
+      sideLength: 0.16,
+      length: 0.6,
+      spaceBetween: 0.24,
+      color: [0.8, 0.2, 0.2, 1.0],
+    },
+    torso: {
+      height: 0.6,
+      width: 0.6,
+      thickness: 0.3,
+      color: [0.8, 0.15, 0.15, 1.0],
+    },
+    leftArm: {
+      theta: 0.0,
+      deltaT: 0.0125,
+      maxT: 0.15,
+      sideLength: 0.14,
+      length: 0.8,
+      shoulderOffsetX: 0.1,
+      color: [0.8, 0.2, 0.2, 1.0],
+    },
+    gun: {
+      thetaH: 0.0,
+      thetaV: 0.0,
+      deltaT: 0.01,
+      maxTH: 0.5,
+      minTH: -0.5,
+      maxTV: 0.5,
+      minTV: 0.0,
+      turningLeft: false,
+      turningRight: false,
+      turningUp: false,
+      turningDown: false,
+      radius: 0.1,
+      length: 0.8,
+      shoulderOffsetX: 0.0,
+      color: [0.9, 0.05, 0.05, 1.0],
+    },
+    head: {
+      radius: 0.2,
+      color: [0.8, 0.1, 0.1, 1.0],
+    },
+  };
+
   var that = this;
   this.keyHandler_ = {
     T: function(on) {
