@@ -12,6 +12,7 @@ function Target(client, gl, spline) {
   };
 
   this.exploding = false;
+  this.fail = 0;
   this.sphere = new Sphere(2);
   client.createObjectBuffers(gl, this.sphere);
 }
@@ -21,7 +22,7 @@ Target.prototype.draw = function(stack) {
       gl          = this.gl_,
       sphere      = this.sphere;
 
-  var r = this.params_.radius;
+  var r = this.params_.radius * (1 - this.fail);
   stack.push();
   stack.multiply(SglMat4.translation(this.params_.position));
   stack.multiply(SglMat4.scaling([r, r, r]));
@@ -54,8 +55,8 @@ Target.prototype.updateSelf = function() {
           this.spline_.getPointFromPercentage(this.params_.progress);
       this.params_.color = 
           [this.params_.progress, 1 - this.params_.progress, 0.0, 1.0];
-  } else {
-    this.params_.radius = 0.1;
+  } else if (this.fail < 1) {
+    this.fail += 0.01
   }
 };
 
@@ -69,7 +70,7 @@ Target.prototype.explode = function() {
 
 Target.prototype.checkHit = function(pos) {
   var l = SglVec3.length(SglVec3.sub(pos, this.params_.position));
-  if (l < this.params_.radius) {
+  if (l < this.params_.radius * (1 - this.fail)) {
     return true;
   } else {
     return false;
