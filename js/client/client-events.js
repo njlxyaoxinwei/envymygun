@@ -66,7 +66,7 @@ NVMCClient.onKeyUp = function(keyCode, event) {
     carMotion(false);
 
   this.character.keyUp(keyCode);
-
+  this.bullet.keyUp(keyCode);
   this.cameras[this.currentCamera].keyUp(keyCode);
 };
 

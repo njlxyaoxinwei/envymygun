@@ -67,7 +67,7 @@ NVMCClient.initializeObjects = function(gl) {
 
   // Character
   this.character = new Character(gl, this);
-  this.bullet = new Bullet(this.character, this, gl);
+  this.bullet = new Bullet(this.character, this, gl, bbox);
 };
 
 NVMCClient.createObjectBuffers = function(gl, obj) {
