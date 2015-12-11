@@ -23,6 +23,7 @@ NVMCClient.drawScene = function(gl) {
 
   this.character.updateSelf();
   this.bullet.updateSelf();
+  this.target.updateSelf();
   
   var stack = this.stack;
   stack.loadIdentity();
@@ -43,6 +44,11 @@ NVMCClient.drawScene = function(gl) {
   // Draw Bullet
   stack.push();
   this.bullet.draw(stack);
+  stack.pop();
+
+  // Draw Target
+  stack.push();
+  this.target.draw(stack);
   stack.pop();
   
   gl.useProgram(null);

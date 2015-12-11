@@ -1,9 +1,11 @@
-function Bullet(character, client, gl, bbox) {
+function Bullet(character, target, client, gl, bbox) {
   this.character_ = character;
+  this.target_ = target;
   this.client_ = client;
   this.gl_ = gl;
   this.bbox_ = bbox;
 
+  this.isDone = false;
   this.params_ = {
     sideLength: 0.2,
     maxSideLength: 0.2,
@@ -45,7 +47,7 @@ Bullet.prototype.draw = function(stack) {
 Bullet.prototype.shoot_ = function() {
   var M = SglMat4.mul(this.client_.myFrame(), this.character_.getBulletFrame());
   this.params_.shot = true;
-  this.params_.sideLength *= 2;
+  this.params_.maxSideLength *= 2;
   this.params_.deltaT *= 2;
   this.params_.color = [0, 0, 1.0, 1.0];
   var characterV = SglMat4.mul3(
@@ -66,8 +68,12 @@ Bullet.prototype.updateSelf = function() {
   p.sideLength = Math.abs(Math.cos(p.theta) * d) + p.minSideLength;
   if (this.params_.shot) {
     p.position = SglVec3.add(p.position, this.velocity_);
-    if (this.isOutOfBound_())
+    if (this.isOutOfBound_()) {
       this.reset();
+    } else if (!this.isDone && this.target_.checkHit(this.getPos())) {
+      this.target_.explode();
+      this.done();
+    }
   }
 };
 
@@ -94,7 +100,7 @@ Bullet.prototype.reset = function() {
   this.params_.color = [1.0, 0, 0, 1.0];
   this.params_.shot = false;
   this.params_.position = [0, 0, 0];
-  this.params_.sideLength /= 2;
+  this.params_.maxSideLength /= 2;
   this.params_.deltaT /= 2;
 };
 
@@ -102,4 +108,24 @@ Bullet.prototype.keyUp = function(keyCode) {
   if (keyCode == ' ' && !this.params_.shot) {
     this.shoot_();
   }
+}
+
+Bullet.prototype.getPos = function() {
+  var result;
+  if (this.params_.shot) {
+    result = SglMat4.mul3(this.M_, this.params_.position);
+  } else {
+    result = SglMat4.mul3(this.character_.getBulletFrame(), 
+        this.params_.position);
+    result = SglMat4.mul3(this.client_.myFrame(), result);
+  }
+  return result;
+};
+
+Bullet.prototype.done = function() {
+  console.log("DONE!");
+  this.velocity_ = [0, 0, 0];
+  this.params_.maxSideLength *= 5;
+  this.params_.deltaT /= 2;
+  this.isDone = true;
 }
