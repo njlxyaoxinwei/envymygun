@@ -73,7 +73,15 @@ NVMCClient.initializeObjects = function(gl) {
 
   // Character
   this.character = new Character(gl, this);
-  this.target = new Target(this, gl);
+
+  // Spline
+  var points = this.game.race.trees.map(function(t) {
+    return SglVec3.add(t.position, [0, t.height, 0]);
+  });
+  this.targetSpline = new BezierSpline(
+    points[0], points[1], points[2], points[3]
+  );
+  this.target = new Target(this, gl, this.targetSpline);
   this.bullet = new Bullet(this.character, this.target, this, gl, bbox);
 };
 

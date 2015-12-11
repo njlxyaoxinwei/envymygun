@@ -1,12 +1,16 @@
-function Target(client, gl) {
+function Target(client, gl, spline) {
   this.client_ = client;
   this.gl_ = gl;
+  this.spline_ = spline;
 
   this.params_ = {
     radius: 3,
-    position: [10, 3, 10],
-    color: [0.5, 0.5, 0.5, 1.0],
+    speed: 1 / 5,
+    progress: 0,
+    position: spline.f(0),
+    color: [0.0, 1.0, 0.0, 1.0],
   };
+
   this.exploding = false;
   this.sphere = new Sphere(4);
   client.createObjectBuffers(gl, this.sphere);
@@ -23,7 +27,7 @@ Target.prototype.draw = function(stack) {
   stack.multiply(SglMat4.scaling([r, r, r]));
   gl.uniformMatrix4fv(
     client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, sphere, this.params_.color, [0, 0, 0, 1.0]);
+  client.drawObject(gl, sphere, this.params_.color, [0.0, 0.0, 0.0, 0.5]);
   stack.pop();
 };
 
@@ -42,6 +46,14 @@ Target.prototype.updateSelf = function() {
     gl.bindBuffer(gl.ARRAY_BUFFER, s.vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, s.vertices, gl.STATIC_DRAW);
     gl.bindBuffer(gl.ARRAY_BUFFER, null);
+  } else if (this.params_.progress < 1) {
+      this.params_.progress += this.params_.speed / this.spline_.arclength;
+      if (this.params_.progress > 1)
+        this.params_.progress = 1;
+      this.params_.position = 
+          this.spline_.getPointFromPercentage(this.params_.progress);
+      this.params_.color = 
+          [this.params_.progress, 1 - this.params_.progress, 0.0, 1.0];
   }
 };
 
