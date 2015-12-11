@@ -1,15 +1,15 @@
 /* Cameras
-  0. Chase Camera
-  1. First-person Camera
-  2. BirdView Camera
+  0. First-person Camera
+  1. BirdView Camera
+  2. Chase Camera
   3. Photographer Camera
 */
 
 function CreateAllCameras() {
   return [
-    new ChaseCamera(),
     new FirstPersonCamera(),
     new BirdViewCamera(),
+    new ChaseCamera(),
     new PhotographerCamera(),
   ];  
 }
@@ -27,8 +27,9 @@ function ChaseCamera() {
     return SglMat4.perspective(Math.PI / 4, ratio, 1, 200);
   };
 
-  this.setView = function(stack, carFrame) {
-    var Rx = SglMat4.rotationAngleAxis(sglDegToRad(-15), [1.0, 0.0, 0.0]);
+  this.setView = function(stack, carFrame, opt) {
+    var Rx = SglMat4.rotationAngleAxis(
+        opt.character.getEyeAngle(), [1.0, 0.0, 0.0]);
     var T  = SglMat4.translation([0.0, 2.5, 4.5]);
     var V_0 = SglMat4.mul(carFrame, SglMat4.mul(T, Rx));
     this.position = SglMat4.col(V_0, 3);
@@ -49,10 +50,10 @@ function FirstPersonCamera() {
     return SglMat4.perspective(Math.PI/4, ratio, 1, 200);
   };
 
-  this.setView = function(stack, carFrame, character) {
+  this.setView = function(stack, carFrame, opt) {
     var R   = SglMat4.rotationAngleAxis(
-        character.getEyeAngle(), [1.0, 0.0, 0.0]);
-    var T   = SglMat4.translation(character.getEyeCoord());
+        opt.character.getEyeAngle(), [1.0, 0.0, 0.0]);
+    var T   = SglMat4.translation(opt.character.getEyeCoord());
     var V_0 = SglMat4.mul(carFrame, SglMat4.mul(T, R));
     this.position = SglMat4.col(V_0, 3);
     var invV = SglMat4.inverse(V_0);

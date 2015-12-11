@@ -27,8 +27,11 @@ NVMCClient.drawScene = function(gl) {
   
   var stack = this.stack;
   stack.loadIdentity();
-  this.cameras[this.currentCamera].setView(
-      stack, this.myFrame(), this.character);
+  this.cameras[this.currentCamera].setView(stack, this.myFrame(), {
+    character: this.character,
+    bullet: this.bullet,
+    target: this.target,
+  });
 
   // Draw Ground
   gl.uniformMatrix4fv(
@@ -98,9 +101,9 @@ NVMCClient.drawTree = function(gl, t) {
 
   // Tree Top
   stack.push();
-  var M_0_tra1 = SglMat4.translation([0, t.height - 3, 0]);
+  var M_0_tra1 = SglMat4.translation([0, t.height - 2, 0]);
   stack.multiply(M_0_tra1);
-  var M_0_sca = SglMat4.scaling([0.6, 1.5, 0.6]);
+  var M_0_sca = SglMat4.scaling([0.6, 1, 0.6]);
   stack.multiply(M_0_sca);
 
   gl.uniformMatrix4fv(
@@ -110,7 +113,7 @@ NVMCClient.drawTree = function(gl, t) {
 
   // Tree root
   stack.push();
-  var M_1_sca = SglMat4.scaling([0.25, t.height / 2 - 1.5, 0.25]);
+  var M_1_sca = SglMat4.scaling([0.25, t.height / 2 - 1, 0.25]);
   stack.multiply(M_1_sca);
 
   gl.uniformMatrix4fv(
