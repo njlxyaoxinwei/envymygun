@@ -1,3 +1,124 @@
 Envy My Simplex
-=======
+===============
+
 A WebGL shooter game based on code from [NVMyCar](http://www.envymycarbook.com/). Final project of Yale University CPSC 478 (Computer Graphics)
+
+## Description
+
+### Concept of game
+
+In the game, the target moves from a column top to another and shrinks and disappears when it reaches the last column of its route. There is also a character who can shoot a simplex from its arm. The goal is to hit the target with the simplex before it disappears.
+
+The blinking simplex bullet is unique and hence only refills itself for the character when the previously shot bullet goes out of the game field without hitting the target. 
+
+There are various view modes (6 of them) available.
+
+### Basic graphic elements
+
+All elements are made up by simple primitives created in previous assignments.
+
+#### Character
+
+The character is the most complex object in the scene. It walks on a wheel and has moving legs, an arm and another as gun barrel. It can be best observed in the photographer view.
+
+The wheel turns with respect to the character's current velocity in the forward-facing direction.
+
+The legs have one degree of freedom and move at a speed that corresponds to the movement of the wheel, which in turn corresponds to the character's forward speed. When the legs are taking a step, the center of mass of the character sinks slightly and it is in fact reflected in the rendering to make the walking on wheel seem more natural, and this also explains the "_bumpy_" feeling of First-Person view as well as the bullet view when the character is moving forward.
+
+The left arm moves at a speed proportional to the speed of the legs, which ultimately corresponds to the character's forward speed. It has one degree of freedom.
+
+The gun barrel is controlled by the user and two degrees of freedom. The reason that it can move horizontally with respect to the body is because the turning provided by NVMC is too crude for a shooting game and hence additional finer horizontal control is provided.
+
+The character is defined in `character.js` and the entire geometry specification is defined in `params_` attribute:
+
+```js
+  this.params_ = {
+    wheel: {
+      theta: 0.0,
+      deltaT: 0.025,
+      radius: 0.3,
+      length: 1,
+      color: [0.51, 0.32, 0.0, 1.0],
+    },
+    leg: {
+      angle: 0.0,
+      t: 0.0,
+      deltaT: 0.05,
+      maxAngle: 0.25,
+      sideLength: 0.16,
+      length: 0.6,
+      spaceBetween: 0.24,
+      color: [0.8, 0.2, 0.2, 1.0],
+    },
+    torso: {
+      height: 0.6,
+      width: 0.6,
+      thickness: 0.3,
+      color: [0.8, 0.15, 0.15, 1.0],
+    },
+    leftArm: {
+      t: 0.0,
+      deltaT: 0.0125,
+      maxAngle: 0.15,
+      sideLength: 0.14,
+      length: 0.8,
+      shoulderOffsetX: 0.1,
+      color: [0.8, 0.2, 0.2, 1.0],
+    },
+    gun: {
+      thetaH: 0.0,
+      thetaV: 0.0,
+      deltaT: 0.01,
+      maxTH: 0.5,
+      minTH: -0.5,
+      maxTV: 0.5,
+      minTV: -0.1,
+      turningLeft: false,
+      turningRight: false,
+      turningUp: false,
+      turningDown: false,
+      radius: 0.1,
+      length: 0.8,
+      shoulderOffsetX: 0.0,
+      color: [0.9, 0.05, 0.05, 1.0],
+    },
+    head: {
+      radius: 0.2,
+      color: [0.8, 0.1, 0.1, 1.0],
+    },
+  };
+```
+
+#### Column
+
+Columns are slight modification of the trees in NVMC, but with colors and wider tops so that the color can be seen clearly in the Bird's Eye View. Its height is also changed from constant to randomly varied values. Its coordinates are also randomly generated for each game.
+
+If we number the columns, then the top position of columns numbered 3k, 3k+1, 3k+2, 3(k+1) define a Bezier curve, and together the union of the curves defines a long curve which is smooth almost everywhere except at column 3k where it loses C1 continuity. This long curve is in fact the route taken by the target.
+
+#### Target
+
+The target is just a sphere following the curve defined in previous section. It actually moves with roughly constant speed because I pre-calculated a line-integral table for looking up the right parameter value for the spline from the distance it has covered.
+
+Since the route is a union of Bezier curves, the target only visits some of the trees. The color of the target changes from bright green to bright red as it approaches its destination, and its colors are matched by those of the column tops where the target makes its stops.
+
+When the target is hit, it explodes into pieces of little triangles. I implemented the explosion by reconstructing the sphere by disjoint triangles and add a random velocity for each triangle. To make the explosion look better, I also take into account the velocity of the target (in the _tangent_ direction of the spline) when it is hit by the simplex, and add that vector on top of the random vector for each triangle so that it would appear as if the triangles were thrown out by inertia.
+
+#### Simplex
+
+The simplex is just another name for the tetrahedron primitive we defined for a previous assignment. It is always blinking, and when it is in the gun barrel it is red, and once shot it becomes blue and appears twice is large. It blows up to five times as big and stays stationary at the collision point when it hits the target. It returns to the gun once it goes out of bound of the game field, which is 100 by 100 with height 20.
+
+A side effect of this setup is that one cannot fire the bullet outside the game field, since once shot, the bullet, being out of bound, returns to the gun immediately.
+
+The trajectory of the bullet is a straight line. The speed is constant _relative to the character when it is fired_. That is, if the character is backing up, the bullet shot will move much slower than if the character is moving forward.
+
+### How to play Envy My Simplex
+
+Open `index.html`, __click on the canvas on the webpage__ to start playing. To play another game just refresh (and re-click the canvas). The game starts immediately after the webpage loads but one cannot use keyboard commands until he clicks the canvas.
+
+A comprehensive instruction is on `index.html`, copied here:
+
+
+
+
+
+
