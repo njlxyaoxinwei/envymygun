@@ -3,6 +3,8 @@ Envy My Simplex
 
 A WebGL shooter game based on code from [NVMyCar](http://www.envymycarbook.com/). Final project of Yale University CPSC 478 (Computer Graphics)
 
+By David Yao
+
 ## Description
 
 ### Concept of game
@@ -117,8 +119,50 @@ Open `index.html`, __click on the canvas on the webpage__ to start playing. To p
 
 A comprehensive instruction is on `index.html`, copied here:
 
+#### Objective
 
+Shoot the moving ball before it reaches its last column, the one with the bloody red top.
 
+#### List of views
 
+  0. First-person view
+  View from the eye of the character
 
+  1. Bullet Chaser view
+  View from close to the front of the simplex (bullet). 
+  
+  2. Target Chaser view
+  View from behind the target(ball).
+  3. Bird's-eye view
+  Orthogonal projection viewed from the sky. Can see the whole game field.
 
+  4. Character Chaser view
+  View from behind the character.
+
+  5. Photographer view
+  Fixed observer at the center of the game field. Can lock view to the character or the target.
+
+#### Instructions
+
+  1. General Instructions
+    - [1/2]: Go to the previous/next view.
+    - [W/S]: Character moves forward/backward.
+    - [A/D]: Character turns left/right.
+    - [Space]: Fire! 
+    - [T/G]: Raise/Lower the gun. 
+    - [F/H]: Point gun slightly to the left/right.
+  2. Special Command in Photographer View
+    - [R/V]: Stand up / Lower himself.
+    - [L/U]: Lock/Unlock camera to character.
+    - [P/O]: Lock/Unlock camera to target.
+
+### Two challenging aspects
+
+  1. The character with moving body parts. 
+    The character is described in detail in [a previous section][character-basic]. Everything from the character states to its rendering is encapsulated in the Character Class. As for the moving parts, I used a lot of parameter values in the `params_` to indicate the various angles by which the joints are turned. For the velocity, I used `NVMCClient.game.state.players.me.dynamicState.linearVelocity` which is in world coordinate, and with linear algebra extracted the forward-facing component.
+  2. The target moving at constant speed along a pre-calculated spline.
+    See the previous sections on [columns][column-basic] and [target][target-basic] on how the spline is calculated.
+
+[character-basic]: #character
+[column-basic]: #column
+[target-basic]: #target
