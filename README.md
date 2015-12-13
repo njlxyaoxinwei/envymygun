@@ -195,6 +195,10 @@ Shoot the moving ball before it reaches its last column, the one with the bloody
 
 Chromium Version 47.0.2526.73 Built on Ubuntu 14.04, running on LinuxMint 17.1 (64-bit)
 
+## Screenshots
+
+
+
 [character-basic]: #character
 [column-basic]: #column
 [target-basic]: #target
