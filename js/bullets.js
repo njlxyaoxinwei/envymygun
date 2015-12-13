@@ -38,9 +38,7 @@ Bullet.prototype.draw = function(stack) {
   }
   stack.multiply(SglMat4.rotationAngleAxis(this.params_.theta, [0, 0, 1]));
   stack.multiply(SglMat4.scaling([ratio, ratio, ratio]));
-  gl.uniformMatrix4fv(
-    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, tetrahedron, this.params_.color, [0, 0, 0, 1.0]);
+  client.drawObject(gl, tetrahedron, this.params_.color, stack.matrix);
   stack.pop();
 };
 

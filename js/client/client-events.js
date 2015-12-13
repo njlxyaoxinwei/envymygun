@@ -11,6 +11,7 @@ NVMCClient.onInitialize = function() {
   this.initializeObjects(gl);
   this.initializeCameras();
   this.uniformShader = new uniformShader(gl);
+  this.lambertianShader = new lambertianSingleColorShader(gl);
 };
 
 NVMCClient.onTerminate = function() {};

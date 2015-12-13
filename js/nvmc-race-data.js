@@ -37,7 +37,7 @@ NVMC.DefaultRace = {
 
   buildings : [],
   weather : {
-    sunLightDirection : [ 0.4, 1, 0.6 ],
+    sunLightDirection : [ 0, -1,  0],
     cloudDensity      : 0,
     rainStrength      : 0
   }

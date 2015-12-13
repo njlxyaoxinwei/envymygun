@@ -211,9 +211,7 @@ Character.prototype.drawWheel_ = function(stack) {
   stack.multiply(SglMat4.translation([0, -1, 0]));
   stack.multiply(SglMat4.rotationAngleAxis(theta, [0, 1, 0]));
 
-  gl.uniformMatrix4fv(
-    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, cylinder, color, [0, 0, 0, 1.0]);
+  client.drawObject(gl, cylinder, color, stack.matrix);
 }
 
 
@@ -286,9 +284,7 @@ Character.prototype.drawLeg_ = function(stack, angle) {
   stack.multiply(SglMat4.rotationAngleAxis(angle, [1, 0, 0]));
   stack.multiply(SglMat4.translation([0, -halfL, 0]));
   stack.multiply(SglMat4.scaling([halfS, halfL, halfS]));
-  gl.uniformMatrix4fv(
-    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, cube, p.color, [0, 0, 0, 1.0]);
+  client.drawObject(gl, cube, p.color, stack.matrix);
   stack.pop();
 };
 
@@ -305,9 +301,7 @@ Character.prototype.drawTorso_ = function(stack) {
   stack.push();
   stack.multiply(SglMat4.translation([0, halfH, 0]));
   stack.multiply(SglMat4.scaling([halfW, halfH, halfT]));
-  gl.uniformMatrix4fv(
-    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, cube, p.color, [0, 0, 0, 1.0]);
+  client.drawObject(gl, cube, p.color, stack.matrix);
   stack.pop();
 };
 
@@ -324,9 +318,7 @@ Character.prototype.drawArm_ = function(stack) {
   stack.multiply(SglMat4.rotationAngleAxis(p.angle, [0, 0, 1]));
   stack.multiply(SglMat4.translation([-halfL, 0, 0]))
   stack.multiply(SglMat4.scaling([halfL, halfS, halfS]));
-  gl.uniformMatrix4fv(
-    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, cube, p.color, [0, 0, 0, 1.0]);
+  client.drawObject(gl, cube, p.color, stack.matrix);
   stack.pop();
 }
 
@@ -340,9 +332,7 @@ Character.prototype.drawHead_ = function(stack) {
   stack.push();
   stack.multiply(SglMat4.translation([0, p.radius, 0]));
   stack.multiply(SglMat4.scaling([p.radius, p.radius, p.radius]));
-  gl.uniformMatrix4fv(
-    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, sphere, p.color, [0, 0, 0, 1.0]);
+  client.drawObject(gl, sphere, p.color, stack.matrix);
   stack.pop();
 };
 
@@ -358,9 +348,7 @@ Character.prototype.drawGun_ = function(stack) {
   stack.push();
   stack.multiply(SglMat4.rotationAngleAxis(sglDegToRad(-90), [1, 0, 0]));
   stack.multiply(SglMat4.scaling([radius, halfL, radius]));
-  gl.uniformMatrix4fv(
-    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, cylinder, p.color, [0, 0, 0, 1.0]);
+  client.drawObject(gl, cylinder, p.color, stack.matrix);
   stack.pop();
 };
 

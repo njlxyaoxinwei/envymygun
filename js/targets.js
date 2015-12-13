@@ -25,9 +25,7 @@ Target.prototype.draw = function(stack) {
   stack.push();
   stack.multiply(SglMat4.translation(this.params_.position));
   stack.multiply(SglMat4.scaling([r, r, r]));
-  gl.uniformMatrix4fv(
-    client.uniformShader.uModelViewMatrixLocation, false, stack.matrix);
-  client.drawObject(gl, sphere, this.params_.color, [0, 0, 0, 1.0]);
+  client.drawObject(gl, sphere, this.params_.color, stack.matrix);
   stack.pop();
 };
 

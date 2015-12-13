@@ -95,10 +95,19 @@ NVMCClient.initializeObjects = function(gl) {
 };
 
 NVMCClient.createObjectBuffers = function(gl, obj) {
+  ComputeNormals(obj);
+
   // Vertices
   obj.vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, obj.vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, obj.vertices, gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+
+  // Normals
+  obj.normalBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, obj.normalBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, obj.vertex_normal, gl.STATIC_DRAW);
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
   // Triangle Vertex Index
