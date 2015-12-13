@@ -170,6 +170,13 @@ Shoot the moving ball before it reaches its last column, the one with the bloody
 ### Overview of all files
 
 - index.html
+- nvmc_lib/ (Code unmodified from NVMC and SpiderGL)
+    + compute_normals.js
+    + nvmc-glue.js
+    + nvmc.js
+    + spidergl-config.js
+    + spidergl.js
+    + style.css
 - js/
     + client/ (Code for NVMCClient Object)
         * client-events.js
@@ -188,6 +195,7 @@ Shoot the moving ball before it reaches its last column, the one with the bloody
             - track.js
     + shaders/
         * uniform-shader.js
+        * lambertian-single-color-shader.js
     + cameras.js
     + bullets.js
     + characters.js
