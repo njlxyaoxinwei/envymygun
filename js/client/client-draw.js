@@ -7,10 +7,15 @@ NVMCClient.drawScene = function(gl) {
       height = this.ui.height,
       ratio  = width / height;
 
+  this.character.updateSelf();
+  this.bullet.updateSelf();
+  this.target.updateSelf();
+  this.updateSun(this.target.params_.progress);
+
   gl.viewport(0, 0, width, height);
 
   // Clear framebuffer
-  gl.clearColor(0.4, 0.6, 0.8, 1.0);
+  gl.clearColor(this.skyColor[0], this.skyColor[1], this.skyColor[2], 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   gl.enable(gl.DEPTH_TEST);
@@ -21,9 +26,6 @@ NVMCClient.drawScene = function(gl) {
       ratio, this.game.race.bbox);
 
 
-  this.character.updateSelf();
-  this.bullet.updateSelf();
-  this.target.updateSelf();
   
   var stack = this.stack;
   stack.loadIdentity();
@@ -34,9 +36,9 @@ NVMCClient.drawScene = function(gl) {
   });
 
   // Shared values in shader
-  this.sunLightDirectionViewSpace = SglVec4.normalize(SglMat4.mul(this.stack.matrix, SglVec3.to4(this.game.race.weather.sunLightDirection, 0)));
+  this.sunLightDirectionViewSpace = SglVec4.normalize(SglMat4.mul(this.stack.matrix, SglVec3.to4(this.sunDirection, 0)));
   gl.uniform4fv(this.lambertianShader.uLightDirectionLocation, this.sunLightDirectionViewSpace);
-  gl.uniform3fv(this.lambertianShader.uLightColorLocation, [1.0, 1.0, 1.0]);
+  gl.uniform3fv(this.lambertianShader.uLightColorLocation, this.sunColor);
   gl.uniformMatrix4fv(this.lambertianShader.uProjectionMatrixLocation, false, P);
 
   // Draw Ground
@@ -136,6 +138,22 @@ NVMCClient.drawTree = function(gl, t, color) {
 
   this.drawObject(gl, this.cylinder, [0.70, 0.56, 0.35, 1.0], stack.matrix);
   stack.pop();
+};
+
+
+NVMCClient.updateSun = function(p) {
+  var angle = p * Math.PI;
+  var d = [-Math.cos(angle), -Math.sin(angle), -Math.cos(angle)];
+  this.sunDirection = SglVec3.normalize(d);
+  var e = Math.abs(p - 0.5) / 0.5;
+  var orange = [1.0, 0.5, 0.0];
+  var white = [1.0, 1.0, 1.0];
+  var color = orange.map(function(ov, i) {
+    var wv = white[i];
+    return ov * e + wv * (1 - e);
+  });
+  this.sunColor = color;
+  this.skyColor = [0.4 * (1-e), 0.6 * (1-e), 0.8 * (1-e)];
 };
 
 
