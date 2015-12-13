@@ -197,7 +197,12 @@ Chromium Version 47.0.2526.73 Built on Ubuntu 14.04, running on LinuxMint 17.1 (
 
 ## Screenshots
 
-
+![First-Person View](https://raw.githubusercontent.com/njlxyaoxinwei/envymygun/master/Screenshots/sc1.png)
+![Photographer View](https://raw.githubusercontent.com/njlxyaoxinwei/envymygun/master/Screenshots/sc2.png)
+![Bird's Eye View](https://raw.githubusercontent.com/njlxyaoxinwei/envymygun/master/Screenshots/sc3.png)
+![Target in View](https://raw.githubusercontent.com/njlxyaoxinwei/envymygun/master/Screenshots/sc4.png)
+![Target Hit](https://raw.githubusercontent.com/njlxyaoxinwei/envymygun/master/Screenshots/sc5.png)
+![Target Pieces](https://raw.githubusercontent.com/njlxyaoxinwei/envymygun/master/Screenshots/sc6.png)
 
 [character-basic]: #character
 [column-basic]: #column
