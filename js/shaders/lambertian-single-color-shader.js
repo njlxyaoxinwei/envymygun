@@ -51,9 +51,10 @@ void main()    \n\
    \n\
   // diffuse component     \n\
   float NdotL = max(0.0, dot(N, L));   \n\
-  vec3 lambert = (uColor.xyz * uLightColor) * NdotL;    \n\
+  vec3 lambert = (uColor.xyz * uLightColor) * NdotL * 0.9;    \n\
+  vec3 result = lambert + uColor.xyz * 0.1; \n\
    \n\
-  gl_FragColor  = vec4(lambert, 1.0);     \n\
+  gl_FragColor  = vec4(result, 1.0);     \n\
   }  \n\
 ";
 
