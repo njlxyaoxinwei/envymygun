@@ -113,6 +113,10 @@ A side effect of this setup is that one cannot fire the bullet outside the game 
 
 The trajectory of the bullet is a straight line. The speed is constant _relative to the character when it is fired_. That is, if the character is backing up, the bullet shot will move much slower than if the character is moving forward.
 
+#### Lighting
+
+The game uses a lighting model with 0.1 ambient and 0.9 lambertian lighting. The sun completes a half circle across the diagonal of the game field as the target completes the spline. The sun light color changes from bright orange to white at noon then to orange again at dusk.
+
 ### How to play Envy My Simplex
 
 Open `index.html`, __click on the canvas on the webpage__ to start playing. To play another game just refresh (and re-click the canvas). The game starts immediately after the webpage loads but one cannot use keyboard commands until he clicks the canvas.
