@@ -5,7 +5,7 @@ function Target(client, gl, spline) {
 
   this.params_ = {
     radius: 2,
-    speed: 1 / 10,
+    speed: 1 / 7,
     progress: 0,
     position: spline.f(0),
     color: [0.0, 1.0, 0.0, 1.0],
