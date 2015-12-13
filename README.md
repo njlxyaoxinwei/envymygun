@@ -148,7 +148,7 @@ Shoot the moving ball before it reaches its last column, the one with the bloody
     - [1/2]: Go to the previous/next view.
     - [W/S]: Character moves forward/backward.
     - [A/D]: Character turns left/right.
-    - [Space]: Fire! 
+    - [E]: Fire! 
     - [T/G]: Raise/Lower the gun. 
     - [F/H]: Point gun slightly to the left/right.
   2. Special Command in Photographer View

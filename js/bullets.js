@@ -105,7 +105,7 @@ Bullet.prototype.reset = function() {
 };
 
 Bullet.prototype.keyUp = function(keyCode) {
-  if (keyCode == ' ' && !this.params_.shot) {
+  if (keyCode == 'E' && !this.params_.shot) {
     this.shoot_();
   }
 }
