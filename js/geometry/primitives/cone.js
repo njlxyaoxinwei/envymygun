@@ -10,7 +10,7 @@ function Cone (resolution) {
 	// vertices definition
 	////////////////////////////////////////////////////////////
 	
-	this.vertices = new Float32Array(3*(resolution+2));
+	this.vertices = new Float32Array(3*(2 * resolution+2));
 	
 	// apex of the cone
 	this.vertices[0] = 0.0;
@@ -36,6 +36,15 @@ function Cone (resolution) {
 	this.vertices[vertexoffset] = 0.0;
 	this.vertices[vertexoffset+1] = 0.0;
 	this.vertices[vertexoffset+2] = 0.0;
+	vertexoffset += 3;
+
+	for (var i = 0; i < resolution; i++) {
+		angle = step * i;
+		this.vertices[vertexoffset] = radius * Math.sin(angle);
+		this.vertices[vertexoffset+1] = 0.0;
+		this.vertices[vertexoffset+2] = radius * Math.cos(angle);
+		vertexoffset += 3;
+	}
 	
 	// triangles defition
 	////////////////////////////////////////////////////////////
@@ -56,8 +65,8 @@ function Cone (resolution) {
 	for (var i = 0; i < resolution; i++) {
 	
 		this.triangleIndices[triangleoffset] = resolution+1;
-		this.triangleIndices[triangleoffset+1] = 1 + (i % resolution);
-		this.triangleIndices[triangleoffset+2] = 1 + ((i+1) % resolution);
+		this.triangleIndices[triangleoffset+1] = resolution + 2 + (i % resolution);
+		this.triangleIndices[triangleoffset+2] = resolution + 2 + ((i+1) % resolution);
 		triangleoffset += 3;
 	}
 	

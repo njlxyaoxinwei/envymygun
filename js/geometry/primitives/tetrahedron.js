@@ -31,17 +31,25 @@ function Tetrahedron() {
     0.0, 0.0, l, // apex, 0
     base[0].x, base[0].y, l - h, // 1
     base[1].x, base[1].y, l - h, // 2
-    base[2].x, base[2].y, l - h  // 3
+    0.0, 0.0, l,
+    base[1].x, base[1].y, l - h,
+    base[2].x, base[2].y, l - h,  // 3
+    0.0, 0.0, l,
+    base[2].x, base[2].y, l - h, 
+    base[0].x, base[0].y, l - h,
+    base[0].x, base[0].y, l - h,
+    base[2].x, base[2].y, l - h,
+    base[1].x, base[1].y, l - h
   ]);
 
   // triangles definition
   ////////////////////////////////////////////////////////////
   // CW from outside
   this.triangleIndices = new Uint16Array([
-    1, 2, 3,  // base
     0, 2, 1,
-    0, 3, 2,
-    0, 1, 3
+    3, 5, 4,
+    6, 8, 7,
+    9, 11, 10
   ]);
 
   this.numVertices = this.vertices.length/3;

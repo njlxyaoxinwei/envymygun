@@ -12,7 +12,7 @@ function Target(client, gl, spline) {
   };
   this.exploding = false;
   this.fail = 0;
-  this.sphere = new Sphere(2);
+  this.sphere = new Sphere(5);
   client.createObjectBuffers(gl, this.sphere);
 }
 

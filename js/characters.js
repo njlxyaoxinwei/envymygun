@@ -69,9 +69,9 @@ function Character(gl, client) {
 
   this.prims_ = {
     cube: new Cube(),
-    cylinder: new Cylinder(10),
-    cone: new Cone(10),
-    sphere: new Sphere(2),
+    cylinder: new Cylinder(20),
+    cone: new Cone(20),
+    sphere: new Sphere(4),
     tetrahedron: new Tetrahedron()
   };
 
