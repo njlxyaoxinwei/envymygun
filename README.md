@@ -95,7 +95,7 @@ The character is defined in `character.js` and the entire geometry specification
 
 Columns are slight modification of the trees in NVMC, but with colors and wider tops so that the color can be seen clearly in the Bird's Eye View. Its height is also changed from constant to randomly varied values. Its coordinates are also randomly generated for each game.
 
-If we number the columns, then the top position of columns numbered 3k, 3k+1, 3k+2, 3(k+1) define a Bezier curve, and together the union of the curves defines a long curve which is smooth almost everywhere except at column 3k where it loses C1 continuity. This long curve is in fact the route taken by the target.
+If we number the columns, then the top positions of columns numbered 3k, 3k+1, 3k+2, 3(k+1) define a Bezier curve, and together the union of the curves defines a long curve which is smooth almost everywhere except at column 3k where it loses C1 continuity. This long curve is in fact the route taken by the target.
 
 #### Target
 
@@ -159,9 +159,41 @@ Shoot the moving ball before it reaches its last column, the one with the bloody
 ### Two challenging aspects
 
   1. The character with moving body parts. 
-    The character is described in detail in [a previous section][character-basic]. Everything from the character states to its rendering is encapsulated in the Character Class. As for the moving parts, I used a lot of parameter values in the `params_` to indicate the various angles by which the joints are turned. For the velocity, I used `NVMCClient.game.state.players.me.dynamicState.linearVelocity` which is in world coordinate, and with linear algebra extracted the forward-facing component.
+    The character is described in detail in the previous [Character section][character-basic]. Everything from the character states to its rendering is encapsulated in the `Character` Class. As for the moving parts, I used a lot of parameter values in the `params_` to indicate the various angles by which the joints are turned. For the velocity, I used `NVMCClient.game.state.players.me.dynamicState.linearVelocity` which is in world coordinate, and with linear algebra extracted the forward-facing component.
   2. The target moving at constant speed along a pre-calculated spline.
-    See the previous sections on [columns][column-basic] and [target][target-basic] on how the spline is calculated.
+    See the previous sections on [columns][column-basic] and [target][target-basic] on how the spline is calculated. I have a `BezierSpline` Class and a `CompositeSpline` Class. For a Bezier Curve I computed a table with entries of pairs (t, s) where s is the value of the approximated line integral from 0 to t. A `CompositeSpline` is initialized with two curves, and I implemented methods to join the line integral table, as well as all the public interface of a spline.
+
+### Overview of all files
+
+- index.html
+- js/
+    + client/ (Code for NVMCClient Object)
+        * client-events.js
+        * client-init.js
+        * client-draw.js
+    + geometry/
+        * primitives/
+            - cone.js
+            - cube.js
+            - cylinder.js
+            - quadrilateral.js
+            - sphere_subd.js
+            - tetrahedron.js
+        * nvmc/
+            - building.js
+            - track.js
+    + shaders/
+        * uniform-shader.js
+    + cameras.js
+    + bullets.js
+    + characters.js
+    + splines.js
+    + targets.js
+    + nvmc-race-data.js (Data for game field dimensions, and generating randomized coordinates for the columns)
+
+### Testing Environment
+
+Chromium Version 47.0.2526.73 Built on Ubuntu 14.04, running on LinuxMint 17.1 (64-bit)
 
 [character-basic]: #character
 [column-basic]: #column
